@@ -14,6 +14,10 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+## Node Environment
+
+Node.js version: v20.14.0 (LTS)
+
 ## Project Setup
 
 ```sh
