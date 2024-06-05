@@ -2,6 +2,6 @@
 
 <template>
   <div>
-    <h1>Home</h1>
+    <h1>模式三：選項加文字</h1>
   </div>
 </template>
