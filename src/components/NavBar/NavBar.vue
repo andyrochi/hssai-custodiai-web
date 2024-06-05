@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import NavLink from '@/components/NavBar/NavLink.vue'
 
 const menuOpen = ref<Boolean>(false)
-
-const menuClass = computed(() => {
-  return {
-    'items-center justify-between hidden w-full md:flex md:w-auto md:order-2': !menuOpen.value,
-    'items-center justify-between w-full md:flex md:w-auto md:order-2': menuOpen.value
-  }
-})
 
 const toggleMenu = () => {
   console.log('toggle', menuOpen.value)
@@ -26,7 +19,8 @@ const closeMenu = () => {
   <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
     <div class="max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto p-4">
       <RouterLink to="/" class="flex items-center space-x-3">
-        <!-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" /> -->
+        <!-- Insert logo here -->
+        <!-- <img src="" class="h-8" alt="Logo" /> -->
         <span class="self-center text-xl font-semibold whitespace-nowrap"
           >AI輔助親權裁判預測系統
         </span>
@@ -34,7 +28,6 @@ const closeMenu = () => {
       <!-- Hamburger Menu -->
       <div class="flex md:order-2 space-x-3 md:space-x-0">
         <button
-          data-collapse-toggle="navbar-sticky"
           type="button"
           class="inline-flex items-center p-2 w-8 h-8 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
           aria-controls="navbar-sticky"
@@ -60,9 +53,15 @@ const closeMenu = () => {
         </button>
       </div>
       <!-- Navigations -->
-      <div :class="menuClass" id="navbar-sticky">
+      <div
+        :class="
+          menuOpen
+            ? 'items-center justify-between w-full md:flex md:w-auto'
+            : 'items-center justify-between hidden w-full md:flex md:order-2 xl:w-auto'
+        "
+      >
         <ul
-          class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 md:flex-row md:mt-0 md:border-0 md:bg-white"
+          class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:w-full md:justify-center md:p-0 md:flex-row md:border-0 md:space-x-6 md:flex-wrap md:bg-white lg:flex-nowrap xl:space-x-8 xl:mt-0"
         >
           <li>
             <NavLink to="/" :closeMenu>首頁</NavLink>
