@@ -22,7 +22,7 @@ import { RouterLink } from 'vue-router'
               >
               <br />
               <a href="http://www.phys.nthu.edu.tw/~aicmt/" target="_blank">
-                國立清華大學 AIFR研究群</a
+                國立清華大學 AIFR人工智慧與基礎研究群</a
               >
             </div>
           </div>
