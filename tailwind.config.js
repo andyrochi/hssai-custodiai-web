@@ -2,7 +2,8 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./src/**/*.{vue,js,ts,jsx,tsx,md}",
+    "vite.config.ts" // to include markdown classes
   ],
   theme: {
     extend: {},

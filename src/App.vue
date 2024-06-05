@@ -9,7 +9,7 @@ import AppFooter from '@/components/Footer/AppFooter.vue'
     <NavBar />
   </header>
   <main
-    class="pt-[65px] md:pt-[125px] min-[928px]:pt-[101px] xl:pt-[61px] bg-slate-100 min-h-[70dvh]"
+    class="py-8 mt-[65px] md:mt-[125px] min-[928px]:mt-[101px] xl:mt-[61px] bg-slate-100 min-h-[70dvh]"
   >
     <RouterView />
   </main>
