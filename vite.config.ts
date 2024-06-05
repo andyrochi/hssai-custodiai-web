@@ -25,7 +25,7 @@ export default defineConfig({
           img: ['mx-auto', 'rounded-lg'],
           p: ['text-base', 'mb-2.5'],
           a: ['hover:underline', 'text-sky-500'],
-          ul: ['list-disc', 'list-inside', 'mb-4'],
+          ul: ['list-outside', 'list-disc', 'ps-5', 'mb-4'],
           ol: ['list-decimal', 'mb-4']
         })
       }
