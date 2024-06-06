@@ -26,7 +26,11 @@ export default defineConfig({
           p: ['text-base', 'mb-2.5'],
           a: ['hover:underline', 'text-sky-500'],
           ul: ['list-outside', 'list-disc', 'ps-5', 'mb-4'],
-          ol: ['list-decimal', 'mb-4']
+          ol: ['list-decimal', 'mb-4'],
+          table: ['table-auto', 'border-collapse', 'w-full', 'rounded-lg', 'border'],
+          th: ['font-bold', 'text-slate-600', 'border-b', 'px-1.5', 'py-3', 'bg-slate-100'],
+          td: ['border', 'border-slate-200', 'px-1.5', 'py-3'],
+          
         })
       }
     }),
