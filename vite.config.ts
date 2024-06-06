@@ -16,12 +16,12 @@ export default defineConfig({
       // see https://github.com/unplugin/unplugin-vue-markdown?tab=readme-ov-file#options
       markdownItSetup(md) {
         md.use(markdownItClass, {
-          h1: ['text-4xl', 'font-bold', 'my-2.5'],
-          h2: ['text-3xl', 'font-bold', 'my-2.5'],
-          h3: ['text-2xl', 'font-bold', 'my-2.5'],
-          h4: ['text-xl', 'font-bold', 'my-2.5'],
-          h5: ['text-lg', 'font-bold', 'my-2.5'],
-          h6: ['base', 'font-bold', 'my-2.5'],
+          h1: ['text-2xl', 'font-bold', 'my-2.5'],
+          h2: ['text-xl', 'font-bold', 'my-2.5'],
+          h3: ['text-lg', 'font-bold', 'my-2.5'],
+          h4: ['text-base', 'font-bold', 'my-2.5'],
+          h5: ['text-base', 'font-bold', 'my-2.5'],
+          h6: ['text-base', 'font-bold', 'my-2.5'],
           img: ['mx-auto', 'rounded-lg'],
           p: ['text-base', 'mb-2.5'],
           a: ['hover:underline', 'text-sky-500'],
