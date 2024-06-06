@@ -59,7 +59,7 @@ import { RouterLink } from 'vue-router'
                 <RouterLink to="/technical-guide" class="hover:underline">技術說明</RouterLink>
               </li>
               <li>
-                <RouterLink to="/dev-team" class="hover:underline">友善資源</RouterLink>
+                <RouterLink to="/friendly-resources" class="hover:underline">友善資源</RouterLink>
               </li>
             </ul>
           </div>
