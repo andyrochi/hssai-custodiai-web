@@ -8,8 +8,9 @@ import AppFooter from '@/components/Footer/AppFooter.vue'
   <header>
     <NavBar />
   </header>
+  <!-- The padding-top has been offsetted by 32px -->
   <main
-    class="py-8 mt-[65px] md:mt-[125px] min-[928px]:mt-[101px] xl:mt-[61px] bg-slate-100 min-h-[70dvh]"
+    class="pb-8 pt-[97px] md:pt-[157px] min-[928px]:pt-[133px] xl:pt-[93px] bg-orange-100 min-h-[70dvh] h-dvh overflow-auto"
   >
     <RouterView />
   </main>

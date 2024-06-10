@@ -15,6 +15,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      alias: '/home',
       component: HomeView
     },
     {
@@ -57,6 +58,11 @@ const router = createRouter({
       name: 'dev-team',
       component: DevTeamView
     },
+    // old link redirect
+    {
+      path: '/contactUs',
+      redirect: '/dev-team'
+    }
     // {
     //   path: '/about',
     //   name: 'about',
