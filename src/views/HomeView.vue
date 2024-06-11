@@ -6,12 +6,14 @@ import ChatbotPanel from '@/components/Chatbot/ChatbotPanel.vue'
 
 <template>
   <div class="w-[92vw] max-w-screen-2xl mx-auto flex h-full">
-    <div class="md:basis-1/2 h-full px-8 pt-8 pb-16 rounded-lg bg-white shadow overflow-auto">
+    <div
+      class="md:basis-1/2 h-full px-8 pt-8 pb-16 rounded-lg bg-white shadow overflow-auto md:mr-1.5"
+    >
       <intro></intro>
       <div class="mt-6 pt-6 pb-3 px-4 rounded-xl bg-slate-100">
         <hint></hint>
       </div>
     </div>
-    <div class="md:basis-1/2"><ChatbotPanel></ChatbotPanel></div>
+    <div class="md:basis-1/2 md:ml-1.5"><ChatbotPanel></ChatbotPanel></div>
   </div>
 </template>
