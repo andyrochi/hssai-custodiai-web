@@ -87,10 +87,13 @@ const onSubmit = () => {
           請使用者以家事調解員的身分來使用，儘量公允地提供父母雙方相關資訊
         </div>
       </div>
-      <button type="button">
-        <!-- download button -->
-        <img src="@/assets/download-icon.svg" alt="download-icon" class="h-8" />
-      </button>
+      <div class="flex align-center no-wrap">
+        <slot name="info-area"> </slot>
+        <button type="button">
+          <!-- download button -->
+          <img src="@/assets/download-icon.svg" alt="download-icon" class="h-8" />
+        </button>
+      </div>
     </div>
     <div class="flex flex-col w-full grow bg-orange-50 rounded-b-lg overflow-hidden">
       <div class="grow overflow-auto">
@@ -104,7 +107,7 @@ const onSubmit = () => {
       <form class="w-full" @submit.prevent="onSubmit">
         <label for="chat" class="sr-only">Your message</label>
         <div
-          class="flex items-center mx-6 mb-6 px-3 py-2 border rounded-xl bg-white overflow-hidden focus-within:border-slate-300 focus-within:shadow"
+          class="flex items-center mx-3 my-3 md:mx-6 md:mb-6 px-3 py-2 border rounded-xl bg-white overflow-hidden focus-within:border-slate-300 focus-within:shadow"
         >
           <textarea
             id="chat"
