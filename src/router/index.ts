@@ -60,6 +60,34 @@ const router = createRouter({
     },
     // old link redirect
     {
+      path: '/news',
+      redirect: '/news-info'
+    },
+    {
+      path: '/userPredict/mode1',
+      redirect: '/mode1-options'
+    },
+    {
+      path: '/userPredict/mode2',
+      redirect: '/mode2-text'
+    },
+    {
+      path: '/userPredict/mode3',
+      redirect: '/mode3-options-text'
+    },
+    {
+      path: '/links',
+      redirect: '/friendly-resources'
+    },
+    {
+      path: '/userDoc',
+      redirect: '/user-guide'
+    },
+    {
+      path: '/techDoc',
+      redirect: '/technical-guide'
+    },
+    {
       path: '/contactUs',
       redirect: '/dev-team'
     }
