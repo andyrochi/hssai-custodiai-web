@@ -13,39 +13,39 @@ defineProps<{
     <div class="flex mt-6 pt-6 pb-3 px-4 rounded-xl bg-slate-100">
       <slot name="instructions"></slot>
     </div>
-    <div class="md:columns-2 mt-6">
-      <div class="mb-6 border-b md:mb-0 md:border-r md:border-b-0">
+    <div class="md:grid md:grid-cols-2 mt-6">
+      <div class="pb-4 mb-4 border-b md:pb-0 md:mb-0 md:border-r md:border-b-0 md:px-3">
         <div>
           <h2 class="text-xl">
             對父親<span class="text-green-800 font-bold">有利</span>的{{ modeType }}
           </h2>
-          <div class="px-2 py-2">
+          <div>
             <slot name="fatherFavorable"></slot>
           </div>
         </div>
-        <div>
+        <div class="mt-3">
           <h2 class="text-xl">
             對父親<span class="text-red-800 font-bold">不利</span>的{{ modeType }}
           </h2>
-          <div class="px-2 py-2">
+          <div>
             <slot name="fatherUnfavorable"></slot>
           </div>
         </div>
       </div>
-      <div>
+      <div class="md:px-3">
         <div>
           <h2 class="text-xl">
             對母親<span class="text-green-800 font-bold">有利</span>的{{ modeType }}
           </h2>
-          <div class="px-2 py-2">
+          <div>
             <slot name="motherFavorable"></slot>
           </div>
         </div>
-        <div>
+        <div class="mt-3">
           <h2 class="text-xl">
             對母親<span class="text-red-800 font-bold">不利</span>的{{ modeType }}
           </h2>
-          <div class="px-2 py-2">
+          <div>
             <slot name="motherUnfavorable"></slot>
           </div>
         </div>
