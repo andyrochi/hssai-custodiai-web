@@ -3,16 +3,22 @@ import ModeLayout from '@/components/ModeLayout.vue'
 import instructions from '@/content/Mode3/mode3_instructions.md'
 import { ref } from 'vue'
 import Button from 'primevue/button'
-import Textarea from 'primevue/textarea'
-import Dropdown from 'primevue/dropdown'
+import FactorBlock from '@/components/Mode3/FactorBlock.vue'
+import AddFactorButton from '@/components/Mode3/AddFactorButton.vue'
 
 interface factorObj {
-  factor: string
+  factor: string | undefined
   description: string
 }
 
+interface factorSourceObj {
+  label: string
+  value: string
+  desc: string
+}
+
 const selectedFactor = ref('')
-const factorsSource = ref([
+const factorsSource = ref<factorSourceObj[]>([
   {
     label: '親子感情',
     value: '親子感情',
@@ -72,38 +78,18 @@ const factorsSource = ref([
   }
 ])
 
-const fatherFavorableFactors = ref([
-  {
-    factor: '',
-    description: ''
-  }
-])
+const fatherFavorableFactors = ref([])
 const fatherFavorableVisible = ref(false)
-const fatherUnfavorableFactors = ref([
-  {
-    factor: '',
-    description: ''
-  }
-])
+const fatherUnfavorableFactors = ref([])
 const fatherUnfavorableVisible = ref(false)
-const motherFavorableFactors = ref([
-  {
-    factor: '',
-    description: ''
-  }
-])
+const motherFavorableFactors = ref([])
 const motherFavorableVisible = ref(false)
-const motherUnfavorableFactors = ref([
-  {
-    factor: '',
-    description: ''
-  }
-])
+const motherUnfavorableFactors = ref([])
 const motherUnfavorableVisible = ref(false)
 
 const addNewFactor = (factorsList: Array<factorObj>) => {
   factorsList.push({
-    factor: '',
+    factor: undefined,
     description: ''
   })
 }
@@ -116,85 +102,61 @@ const addNewFactor = (factorsList: Array<factorObj>) => {
     </template>
     <template #fatherFavorable>
       <div class="mt-2">
-        <div
+        <FactorBlock
           v-for="(factor, index) in fatherFavorableFactors"
           :key="index"
-          class="mb-3 bg-slate-100 rounded-xl px-2 py-1"
+          :index="index"
+          :factorsSource="factorsSource"
+          v-model:factor="fatherFavorableFactors[index]"
+          v-model:factorsList="fatherFavorableFactors"
         >
-          <div class="flex justify-begin items-center flex-wrap gap-1 mb-2">
-            <div class="w-full text-center text-slate-600 font-bold text-sm relative">
-              因素與理由 {{ index + 1 }}
-              <button
-                class="absolute right-0 top-0 rounded-full outline-none focus:ring-2 focus:ring-orange-200"
-                @click="fatherFavorableFactors.splice(index, 1)"
-              >
-                <img src="@/assets/x-mark.svg" class="h-6" />
-              </button>
-            </div>
-            <Dropdown
-              v-model="factor['factor']"
-              :options="factorsSource"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="選擇因素"
-              class="w-full text-sm md:w-[14rem] rounded-xl"
-              showClear
-            >
-              <template #option="slotProps">
-                <div>
-                  <div class="font-bold">{{ slotProps.option.label }}</div>
-                  <div class="text-xs text-gray-400 text-wrap">
-                    {{ slotProps.option.desc }}
-                  </div>
-                </div>
-              </template>
-            </Dropdown>
-            <button class="bg-slate-50 rounded-xl border px-2 py-2 text-sm my-1 hover:bg-slate-100">
-              查看範例文字
-            </button>
-            <button
-              @click="factor['description'] = ''"
-              class="bg-red-50 rounded-xl text-red-800 border px-2 py-2 text-sm my-1 hover:bg-red-100"
-            >
-              清除文字
-            </button>
-          </div>
-          <Textarea
-            v-model="factor['description']"
-            rows="4"
-            class="resize-none w-full"
-            placeholder="可直接輸入描述，或由範例文字開始編輯..."
-          ></Textarea>
-        </div>
+        </FactorBlock>
       </div>
-      <button
-        @click="addNewFactor(fatherFavorableFactors)"
-        class="w-full flex justify-center items-center rounded-xl outline-none bg-orange-50 text-orange-800 py-2 hover:bg-orange-100 focus:ring-4 focus:ring-orange-300"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-6 mr-1"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-        新增因素與理由
-      </button>
+      <AddFactorButton @click="addNewFactor(fatherFavorableFactors)"> </AddFactorButton>
     </template>
-
     <template #fatherUnfavorable>
-      <Button label="新增因素與理由"></Button>
+      <div class="mt-2">
+        <FactorBlock
+          v-for="(factor, index) in fatherUnfavorableFactors"
+          :key="index"
+          :index="index"
+          :factorsSource="factorsSource"
+          v-model:factor="fatherUnfavorableFactors[index]"
+          v-model:factorsList="fatherUnfavorableFactors"
+        >
+        </FactorBlock>
+      </div>
+      <AddFactorButton @click="addNewFactor(fatherUnfavorableFactors)"> </AddFactorButton>
     </template>
 
     <template #motherFavorable>
-      <Button label="新增因素與理由"></Button>
+      <div class="mt-2">
+        <FactorBlock
+          v-for="(factor, index) in motherFavorableFactors"
+          :key="index"
+          :index="index"
+          :factorsSource="factorsSource"
+          v-model:factor="motherFavorableFactors[index]"
+          v-model:factorsList="motherFavorableFactors"
+        >
+        </FactorBlock>
+      </div>
+      <AddFactorButton @click="addNewFactor(motherFavorableFactors)"> </AddFactorButton>
     </template>
 
     <template #motherUnfavorable>
-      <Button label="新增因素與理由"></Button>
+      <div class="mt-2">
+        <FactorBlock
+          v-for="(factor, index) in motherUnfavorableFactors"
+          :key="index"
+          :index="index"
+          :factorsSource="factorsSource"
+          v-model:factor="motherUnfavorableFactors[index]"
+          v-model:factorsList="motherUnfavorableFactors"
+        >
+        </FactorBlock>
+      </div>
+      <AddFactorButton @click="addNewFactor(motherUnfavorableFactors)"> </AddFactorButton>
     </template>
     <template #note>
       <div class="text-sm text-gray-700 mt-3">
