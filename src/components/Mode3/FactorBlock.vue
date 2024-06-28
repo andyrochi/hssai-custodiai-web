@@ -28,7 +28,10 @@
           </div>
         </template>
       </Dropdown>
-      <button class="bg-slate-50 rounded-xl border px-2 py-2 text-sm my-1 hover:bg-slate-100">
+      <button
+        class="bg-slate-50 rounded-xl border px-2 py-2 text-sm my-1 hover:bg-slate-100"
+        @click="setModal()"
+      >
         查看範例文字
       </button>
       <button
@@ -67,5 +70,6 @@ const factorsList = defineModel<factorObj[]>('factorsList', { required: true })
 defineProps<{
   index: number
   factorsSource: factorSourceObj[]
+  setModal: Function
 }>()
 </script>
