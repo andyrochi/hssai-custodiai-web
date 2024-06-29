@@ -10,19 +10,21 @@ const toggleMenu = () => {
   menuOpen.value = !menuOpen.value
 }
 
-const closeMenu = () => {
+const closeMenu = (event: MouseEvent) => {
+  // to close dropdown on click
+  ;(event.target as HTMLElement).blur()
   menuOpen.value = false
 }
 </script>
 
 <template>
-  <nav class="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
+  <nav class="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200">
     <div class="max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto p-4">
       <RouterLink to="/" class="flex items-center space-x-3">
         <!-- Insert logo here -->
         <!-- <img src="" class="h-8" alt="Logo" /> -->
-        <span class="self-center text-xl font-semibold whitespace-nowrap"
-          >AI輔助親權裁判預測系統
+        <span class="self-center text-xl font-semibold whitespace-nowrap">
+          AI輔助親權裁判預測系統
         </span>
       </RouterLink>
       <!-- Hamburger Menu -->
@@ -64,31 +66,34 @@ const closeMenu = () => {
           class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:w-full md:justify-center md:p-0 md:flex-row md:border-0 md:space-x-6 md:flex-wrap md:bg-white lg:flex-nowrap xl:space-x-8 xl:mt-0"
         >
           <li>
-            <NavLink to="/" :closeMenu>首頁</NavLink>
+            <NavLink to="/" :closeMenu="closeMenu">首頁</NavLink>
           </li>
           <li>
-            <NavLink to="/news-info" :closeMenu>報導與介紹</NavLink>
+            <NavLink to="/news-info" :closeMenu="closeMenu">報導與介紹</NavLink>
           </li>
           <li>
-            <NavLink to="/mode1-options" :closeMenu>模式一：選項</NavLink>
+            <NavLink
+              to="#"
+              :closeMenu="closeMenu"
+              :children="[
+                { to: '/mode1-options', name: '模式一：選項' },
+                { to: '/mode2-text', name: '模式二：文字' },
+                { to: '/mode3-options-text', name: '模式三：選項加文字' }
+              ]"
+              >模式選單</NavLink
+            >
           </li>
           <li>
-            <NavLink to="/mode2-text" :closeMenu>模式二：文字</NavLink>
+            <NavLink to="/friendly-resources" :closeMenu="closeMenu">友善資源</NavLink>
           </li>
           <li>
-            <NavLink to="/mode3-options-text" :closeMenu>模式三：選項加文字</NavLink>
+            <NavLink to="/user-guide" :closeMenu="closeMenu">使用說明</NavLink>
           </li>
           <li>
-            <NavLink to="/friendly-resources" :closeMenu>友善資源</NavLink>
+            <NavLink to="/technical-guide" :closeMenu="closeMenu">技術說明</NavLink>
           </li>
           <li>
-            <NavLink to="/user-guide" :closeMenu>使用說明</NavLink>
-          </li>
-          <li>
-            <NavLink to="/technical-guide" :closeMenu>技術說明</NavLink>
-          </li>
-          <li>
-            <NavLink to="/dev-team" :closeMenu>開發團隊</NavLink>
+            <NavLink to="/dev-team" :closeMenu="closeMenu">開發團隊</NavLink>
           </li>
         </ul>
       </div>
