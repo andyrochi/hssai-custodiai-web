@@ -3,6 +3,42 @@ import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import NavLink from '@/components/NavBar/NavLink.vue'
 
+const navbarLinks = [
+  {
+    to: '/',
+    name: '首頁'
+  },
+  {
+    to: '/news-info',
+    name: '報導與介紹'
+  },
+  {
+    to: '#',
+    name: '模式選單',
+    children: [
+      { to: '/mode1-options', name: '模式一：選項' },
+      { to: '/mode2-text', name: '模式二：文字' },
+      { to: '/mode3-options-text', name: '模式三：選項加文字' }
+    ]
+  },
+  {
+    to: '/friendly-resources',
+    name: '友善資源'
+  },
+  {
+    to: '/user-guide',
+    name: '使用說明'
+  },
+  {
+    to: '/technical-guide',
+    name: '技術說明'
+  },
+  {
+    to: '/dev-team',
+    name: '開發團隊'
+  }
+]
+
 const menuOpen = ref<Boolean>(false)
 
 const toggleMenu = () => {
@@ -65,35 +101,14 @@ const closeMenu = (event: MouseEvent) => {
         <ul
           class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:w-full md:justify-center md:p-0 md:flex-row md:border-0 md:space-x-6 md:flex-wrap md:bg-white lg:flex-nowrap xl:space-x-8 xl:mt-0"
         >
-          <li>
-            <NavLink to="/" :closeMenu="closeMenu">首頁</NavLink>
-          </li>
-          <li>
-            <NavLink to="/news-info" :closeMenu="closeMenu">報導與介紹</NavLink>
-          </li>
-          <li>
+          <li v-for="(link, index) in navbarLinks" :key="index">
             <NavLink
-              to="#"
+              :to="link.to"
               :closeMenu="closeMenu"
-              :children="[
-                { to: '/mode1-options', name: '模式一：選項' },
-                { to: '/mode2-text', name: '模式二：文字' },
-                { to: '/mode3-options-text', name: '模式三：選項加文字' }
-              ]"
-              >模式選單</NavLink
+              :children="link.children ? link.children : undefined"
             >
-          </li>
-          <li>
-            <NavLink to="/friendly-resources" :closeMenu="closeMenu">友善資源</NavLink>
-          </li>
-          <li>
-            <NavLink to="/user-guide" :closeMenu="closeMenu">使用說明</NavLink>
-          </li>
-          <li>
-            <NavLink to="/technical-guide" :closeMenu="closeMenu">技術說明</NavLink>
-          </li>
-          <li>
-            <NavLink to="/dev-team" :closeMenu="closeMenu">開發團隊</NavLink>
+              {{ link.name }}
+            </NavLink>
           </li>
         </ul>
       </div>
