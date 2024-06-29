@@ -94,12 +94,12 @@ const closeMenu = (event: MouseEvent) => {
       <div
         :class="
           menuOpen
-            ? 'items-center justify-between w-full md:flex md:w-auto'
-            : 'items-center justify-between hidden w-full md:flex md:order-2 xl:w-auto'
+            ? 'items-center w-full md:flex md:order-2 md:w-fit'
+            : 'items-center hidden w-full md:flex md:order-2 md:w-fit'
         "
       >
         <ul
-          class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:w-full md:justify-center md:p-0 md:flex-row md:border-0 md:space-x-6 md:flex-wrap md:bg-white lg:flex-nowrap xl:space-x-8 xl:mt-0"
+          class="flex flex-col p-4 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:w-full md:justify-center md:mt-0 md:p-0 md:flex-row md:border-0 md:text-sm md:space-x-4 md:bg-white lg:text-base lg:space-x-6 xl:space-x-8"
         >
           <li v-for="(link, index) in navbarLinks" :key="index">
             <NavLink
