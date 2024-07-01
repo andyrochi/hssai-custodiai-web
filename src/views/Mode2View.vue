@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import ModeLayout from '@/components/ModeLayout.vue'
 import instructions from '@/content/Mode2/mode2_instructions.md'
-import { ref } from 'vue'
 import TextInputComponent from '@/components/Mode2/TextInputComponent.vue'
+import { useMode2TextStore } from '@/stores/mode2Text'
+import { storeToRefs } from 'pinia'
 
-const fatherFavorableText = ref('')
-const fatherUnfavorableText = ref('')
-const motherFavorableText = ref('')
-const motherUnfavorableText = ref('')
+const store = useMode2TextStore()
+const { allFactors } = storeToRefs(store)
 
 const dataTemplate = {
   advantage: [
@@ -220,13 +219,13 @@ const dataTemplate = {
 </script>
 
 <template>
-  <ModeLayout title="模式二：文字輸入" modeType="理由文字">
+  <ModeLayout title="模式二：文字輸入" modeType="理由文字" :reset="store.$reset">
     <template #instructions>
       <instructions></instructions>
     </template>
     <template #fatherFavorable>
       <TextInputComponent
-        v-model="fatherFavorableText"
+        v-model="allFactors['fatherFavorable']"
         dialogTitle="對父親有利的理由文字"
         :descriptionList="dataTemplate['advantage']"
         class="mt-2"
@@ -235,7 +234,7 @@ const dataTemplate = {
     </template>
     <template #fatherUnfavorable>
       <TextInputComponent
-        v-model="fatherUnfavorableText"
+        v-model="allFactors['fatherUnfavorable']"
         dialogTitle="對父親不利的理由文字"
         :descriptionList="dataTemplate['disadvantage']"
         class="mt-2"
@@ -244,7 +243,7 @@ const dataTemplate = {
     </template>
     <template #motherFavorable>
       <TextInputComponent
-        v-model="motherFavorableText"
+        v-model="allFactors['motherFavorable']"
         dialogTitle="對母親有利的理由文字"
         :descriptionList="dataTemplate['advantage']"
         class="mt-2"
@@ -253,7 +252,7 @@ const dataTemplate = {
     </template>
     <template #motherUnfavorable>
       <TextInputComponent
-        v-model="motherUnfavorableText"
+        v-model="allFactors['motherUnfavorable']"
         dialogTitle="對母親不利的理由文字"
         :descriptionList="dataTemplate['disadvantage']"
         class="mt-2"
