@@ -9,5 +9,12 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     motherUnfavorable: []
   })
 
-  return { allFactors }
+  function $reset() {
+    allFactors.fatherFavorable = []
+    allFactors.fatherUnfavorable = []
+    allFactors.motherFavorable = []
+    allFactors.motherUnfavorable = []
+  }
+
+  return { allFactors, $reset }
 })

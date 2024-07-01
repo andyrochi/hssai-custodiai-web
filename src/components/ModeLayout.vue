@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import BasicLayout from '@/components/BasicLayout.vue'
 
-defineProps<{
+interface Props {
   title: string
   modeType: string | null
-}>()
+  reset?: Function
+}
+
+withDefaults(defineProps<Props>(), {
+  reset: () => {}
+})
 </script>
 
 <template>
@@ -56,7 +61,14 @@ defineProps<{
       <slot name="note"></slot>
     </div>
     <div class="flex justify-center gap-3 mt-3">
-      <button class="text-xl bg-red-100 px-4 py-2 rounded-lg text-red-800 block hover:bg-red-50">
+      <button
+        class="text-xl bg-red-100 px-4 py-2 rounded-lg text-red-800 block hover:bg-red-50"
+        @click="
+          () => {
+            reset()
+          }
+        "
+      >
         清除輸入
       </button>
       <button

@@ -70,7 +70,7 @@ const factorsSource = [
 </script>
 
 <template>
-  <ModeLayout title="模式一：選項輸入" modeType="因素選項">
+  <ModeLayout title="模式一：選項輸入" modeType="因素選項" :reset="store.$reset">
     <template #instructions>
       <instructions></instructions>
     </template>
