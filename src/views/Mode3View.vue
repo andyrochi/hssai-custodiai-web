@@ -1,22 +1,13 @@
 <script setup lang="ts">
 import ModeLayout from '@/components/ModeLayout.vue'
 import instructions from '@/content/Mode3/mode3_instructions.md'
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import FactorBlock from '@/components/Mode3/FactorBlock.vue'
 import AddFactorButton from '@/components/Mode3/AddFactorButton.vue'
 import Dialog from 'primevue/dialog'
-
-interface factorObj {
-  factor: string | undefined
-  description: string
-}
-
-interface Factors {
-  fatherFavorable: factorObj[]
-  fatherUnfavorable: factorObj[]
-  motherFavorable: factorObj[]
-  motherUnfavorable: factorObj[]
-}
+import { useMode3OptionsTextStore } from '@/stores/mode3OptionsText'
+import type { Factors } from '@/stores/mode3OptionsText'
+import { storeToRefs } from 'pinia'
 
 interface factorSourceObj {
   label: string
@@ -124,19 +115,15 @@ const factorDescriptionsSource = {
   }
 }
 
-const allFactors: Factors = reactive({
-  fatherFavorable: [],
-  fatherUnfavorable: [],
-  motherFavorable: [],
-  motherUnfavorable: []
-})
-
 const factorTitleMapping = {
   fatherFavorable: '對父親有利的因素與理由',
   fatherUnfavorable: '對父親不利的因素與理由',
   motherFavorable: '對母親有利的因素與理由',
   motherUnfavorable: '對母親不利的因素與理由'
 }
+
+const store = useMode3OptionsTextStore()
+const { allFactors } = storeToRefs(store)
 
 const showModal = ref(false)
 const modalFactorType = ref<keyof Factors>('fatherFavorable')
@@ -145,13 +132,6 @@ const modalTitle = ref('')
 const modalDescType = computed(() => {
   return modalFactorType.value.indexOf('Favorable') >= 0 ? 'advantage' : 'disadvantage'
 })
-
-const addNewFactor = (factorsList: factorObj[]) => {
-  factorsList.push({
-    factor: undefined,
-    description: ''
-  })
-}
 
 const setModalProps = (factorType: keyof Factors, index: number, newModalTitle: string) => {
   showModal.value = true
@@ -165,14 +145,14 @@ const setModalPropsWrapper = (factorType: keyof Factors, index: number, newModal
 }
 
 const setFactorAndDescription = (factorKey: string, description: string) => {
-  allFactors[modalFactorType.value][modalFactorIndex.value].factor = factorKey
-  allFactors[modalFactorType.value][modalFactorIndex.value].description = description
+  allFactors.value[modalFactorType.value][modalFactorIndex.value].factor = factorKey
+  allFactors.value[modalFactorType.value][modalFactorIndex.value].description = description
   showModal.value = false
 }
 </script>
 
 <template>
-  <ModeLayout title="模式三：選項加文字輸入" modeType="因素與理由">
+  <ModeLayout title="模式三：選項加文字輸入" modeType="因素與理由" :reset="store.$reset">
     <template #instructions>
       <instructions></instructions>
     </template>
@@ -191,7 +171,7 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
         >
         </FactorBlock>
       </div>
-      <AddFactorButton @click="addNewFactor(allFactors['fatherFavorable'])"> </AddFactorButton>
+      <AddFactorButton @click="store.addNewFactor('fatherFavorable')"> </AddFactorButton>
     </template>
     <template #fatherUnfavorable>
       <div class="mt-2">
@@ -212,7 +192,7 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
         >
         </FactorBlock>
       </div>
-      <AddFactorButton @click="addNewFactor(allFactors['fatherUnfavorable'])"> </AddFactorButton>
+      <AddFactorButton @click="store.addNewFactor('fatherUnfavorable')"> </AddFactorButton>
     </template>
 
     <template #motherFavorable>
@@ -230,7 +210,7 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
         >
         </FactorBlock>
       </div>
-      <AddFactorButton @click="addNewFactor(allFactors['motherFavorable'])"> </AddFactorButton>
+      <AddFactorButton @click="store.addNewFactor('motherFavorable')"> </AddFactorButton>
     </template>
 
     <template #motherUnfavorable>
@@ -252,7 +232,7 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
         >
         </FactorBlock>
       </div>
-      <AddFactorButton @click="addNewFactor(allFactors['motherUnfavorable'])"> </AddFactorButton>
+      <AddFactorButton @click="store.addNewFactor('motherUnfavorable')"> </AddFactorButton>
     </template>
     <template #note>
       <div class="text-sm text-gray-700 mt-3">
