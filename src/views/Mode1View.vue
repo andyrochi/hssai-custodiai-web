@@ -2,13 +2,11 @@
 import ModeLayout from '@/components/ModeLayout.vue'
 import instructions from '@/content/Mode1/mode1_instructions.md'
 import CustodyMultiSelect from '@/components/CustodyMultiSelect.vue'
+import { useMode1OptionsStore } from '@/stores/mode1Options'
+import { storeToRefs } from 'pinia'
 
-import { ref } from 'vue'
-
-const fatherFavFactors = ref()
-const fatherUnfavFactors = ref()
-const motherFavFactors = ref()
-const motherUnfavFactors = ref()
+const store = useMode1OptionsStore()
+const { allFactors } = storeToRefs(store)
 
 const factorsSource = [
   {
@@ -69,7 +67,6 @@ const factorsSource = [
     desc: '是否有不良嗜好、家庭暴力、精神虐待、吸毒或入監的紀錄'
   }
 ]
-const factors = ref(factorsSource)
 </script>
 
 <template>
@@ -81,8 +78,8 @@ const factors = ref(factorsSource)
     <template #fatherFavorable>
       <div class="mt-2">
         <CustodyMultiSelect
-          v-model="fatherFavFactors"
-          :options="factors"
+          v-model="allFactors['fatherFavorable']"
+          :options="factorsSource"
           optionLabel="label"
           optionValue="value"
           optionDesc="desc"
@@ -95,8 +92,8 @@ const factors = ref(factorsSource)
     <template #fatherUnfavorable>
       <div class="mt-2">
         <CustodyMultiSelect
-          v-model="fatherUnfavFactors"
-          :options="factors"
+          v-model="allFactors['fatherUnfavorable']"
+          :options="factorsSource"
           optionLabel="label"
           optionValue="value"
           optionDesc="desc"
@@ -109,8 +106,8 @@ const factors = ref(factorsSource)
     <template #motherFavorable>
       <div class="mt-2">
         <CustodyMultiSelect
-          v-model="motherFavFactors"
-          :options="factors"
+          v-model="allFactors['motherFavorable']"
+          :options="factorsSource"
           optionLabel="label"
           optionValue="value"
           optionDesc="desc"
@@ -123,8 +120,8 @@ const factors = ref(factorsSource)
     <template #motherUnfavorable>
       <div class="mt-2">
         <CustodyMultiSelect
-          v-model="motherUnfavFactors"
-          :options="factors"
+          v-model="allFactors['motherUnfavorable']"
+          :options="factorsSource"
           optionLabel="label"
           optionValue="value"
           optionDesc="desc"
