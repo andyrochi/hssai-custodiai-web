@@ -1,6 +1,4 @@
-<script setup lang="ts">
-import { RouterLink } from 'vue-router'
-</script>
+<script setup lang="ts"></script>
 <template>
   <footer class="bg-white border-t">
     <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">

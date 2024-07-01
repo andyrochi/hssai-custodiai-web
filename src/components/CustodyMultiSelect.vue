@@ -4,9 +4,9 @@ import MultiSelect from 'primevue/multiselect'
 const model = defineModel()
 
 defineProps<{
-  options: Array
+  options: any[]
   placeholder: string
-  optionLabel: string | null
+  optionLabel: string | undefined
   optionValue: string
   optionDesc: string | null
 }>()
@@ -81,7 +81,9 @@ defineProps<{
   >
     <template #option="slotProps">
       <div>
-        <div class="font-bold">{{ slotProps.option[optionLabel] }}</div>
+        <div class="font-bold">
+          {{ optionLabel ? slotProps.option[optionLabel] : slotProps.option[optionValue] }}
+        </div>
         <div v-if="optionDesc" class="text-xs text-gray-400 text-wrap">
           {{ slotProps.option[optionDesc] }}
         </div>
