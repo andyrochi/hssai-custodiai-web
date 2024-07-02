@@ -7,7 +7,8 @@ import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 
 const store = useMode1OptionsStore()
-const { allFactors, mockResult } = storeToRefs(store)
+const { allFactors, predictResult, showPredict } = storeToRefs(store)
+const { getPrediction } = store
 
 const factorsSource = [
   {
@@ -68,14 +69,20 @@ const factorsSource = [
     desc: '是否有不良嗜好、家庭暴力、精神虐待、吸毒或入監的紀錄'
   }
 ]
+
+const send = () => {
+  // perform validation
+  getPrediction()
+}
 </script>
 
 <template>
   <ModeLayout
     title="模式一：選項輸入"
     modeType="因素選項"
+    :predict="send"
     :reset="store.$reset"
-    :showPredict="true"
+    :showPredict="showPredict"
   >
     <template #instructions>
       <instructions></instructions>
@@ -149,8 +156,8 @@ const factorsSource = [
 
     <template #predict-result>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ViolinPlot :predict_result="mockResult" model_used="L1"></ViolinPlot>
-        <ViolinPlot :predict_result="mockResult" model_used="L2"></ViolinPlot>
+        <ViolinPlot :predict_result="predictResult" model_used="L1"></ViolinPlot>
+        <ViolinPlot :predict_result="predictResult" model_used="L2"></ViolinPlot>
       </div>
     </template>
   </ModeLayout>

@@ -5,11 +5,13 @@ interface Props {
   title: string
   modeType: string | null
   reset?: Function
+  predict?: Function
   showPredict?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   reset: () => {},
+  predict: () => {},
   showPredict: false
 })
 </script>
@@ -75,6 +77,11 @@ withDefaults(defineProps<Props>(), {
       </button>
       <button
         class="text-xl bg-orange-100 px-4 py-2 rounded-lg text-orange-800 block hover:bg-orange-50"
+        @click="
+          () => {
+            predict()
+          }
+        "
       >
         開始預測
       </button>
