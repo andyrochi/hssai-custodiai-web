@@ -67,12 +67,12 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
   })
 
   const predictResult = reactive<PredictResponse>({
-    T1: {
+    L1: {
       Applicant: { ...defaultProbabilityStats },
       Both: { ...defaultProbabilityStats },
       Respondent: { ...defaultProbabilityStats }
     },
-    T2: {
+    L2: {
       Applicant: { ...defaultProbabilityStats },
       Both: { ...defaultProbabilityStats },
       Respondent: { ...defaultProbabilityStats }
