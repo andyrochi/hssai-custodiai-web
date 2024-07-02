@@ -8,6 +8,7 @@ import Dialog from 'primevue/dialog'
 import { useMode3OptionsTextStore } from '@/stores/mode3OptionsText'
 import type { Factors } from '@/stores/mode3OptionsText'
 import { storeToRefs } from 'pinia'
+import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 
 interface factorSourceObj {
   label: string
@@ -123,7 +124,7 @@ const factorTitleMapping = {
 }
 
 const store = useMode3OptionsTextStore()
-const { allFactors } = storeToRefs(store)
+const { allFactors, mockResult } = storeToRefs(store)
 
 const showModal = ref(false)
 const modalFactorType = ref<keyof Factors>('fatherFavorable')
@@ -152,7 +153,12 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
 </script>
 
 <template>
-  <ModeLayout title="模式三：選項加文字輸入" modeType="因素與理由" :reset="store.$reset">
+  <ModeLayout
+    title="模式三：選項加文字輸入"
+    modeType="因素與理由"
+    :reset="store.$reset"
+    :showPredict="true"
+  >
     <template #instructions>
       <instructions></instructions>
     </template>
@@ -241,6 +247,13 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
           class="text-blue-300 hover:underline"
           >技術說明</RouterLink
         >。
+      </div>
+    </template>
+
+    <template #predict-result>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ViolinPlot :predict_result="mockResult" model_used="C1"></ViolinPlot>
+        <ViolinPlot :predict_result="mockResult" model_used="C2"></ViolinPlot>
       </div>
     </template>
   </ModeLayout>

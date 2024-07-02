@@ -4,9 +4,10 @@ import instructions from '@/content/Mode1/mode1_instructions.md'
 import CustodyMultiSelect from '@/components/CustodyMultiSelect.vue'
 import { useMode1OptionsStore } from '@/stores/mode1Options'
 import { storeToRefs } from 'pinia'
+import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 
 const store = useMode1OptionsStore()
-const { allFactors } = storeToRefs(store)
+const { allFactors, mockResult } = storeToRefs(store)
 
 const factorsSource = [
   {
@@ -70,7 +71,12 @@ const factorsSource = [
 </script>
 
 <template>
-  <ModeLayout title="模式一：選項輸入" modeType="因素選項" :reset="store.$reset">
+  <ModeLayout
+    title="模式一：選項輸入"
+    modeType="因素選項"
+    :reset="store.$reset"
+    :showPredict="true"
+  >
     <template #instructions>
       <instructions></instructions>
     </template>
@@ -138,6 +144,13 @@ const factorsSource = [
           class="text-blue-300 hover:underline"
           >技術說明</RouterLink
         >。
+      </div>
+    </template>
+
+    <template #predict-result>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ViolinPlot :predict_result="mockResult" model_used="L1"></ViolinPlot>
+        <ViolinPlot :predict_result="mockResult" model_used="L2"></ViolinPlot>
       </div>
     </template>
   </ModeLayout>

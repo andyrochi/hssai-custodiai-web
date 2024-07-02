@@ -8,14 +8,13 @@ import PrimeVue from 'primevue/config'
 import Lara from '@/primevue-presets/lara'
 import './style.css'
 
-
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
 app.use(PrimeVue, {
-    unstyled: true,
-    pt: Lara
+  unstyled: true,
+  pt: Lara
 })
 
 app.mount('#app')

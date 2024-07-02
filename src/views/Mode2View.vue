@@ -4,9 +4,10 @@ import instructions from '@/content/Mode2/mode2_instructions.md'
 import TextInputComponent from '@/components/Mode2/TextInputComponent.vue'
 import { useMode2TextStore } from '@/stores/mode2Text'
 import { storeToRefs } from 'pinia'
+import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 
 const store = useMode2TextStore()
-const { allFactors } = storeToRefs(store)
+const { allFactors, mockResult } = storeToRefs(store)
 
 const dataTemplate = {
   advantage: [
@@ -219,7 +220,12 @@ const dataTemplate = {
 </script>
 
 <template>
-  <ModeLayout title="模式二：文字輸入" modeType="理由文字" :reset="store.$reset">
+  <ModeLayout
+    title="模式二：文字輸入"
+    modeType="理由文字"
+    :reset="store.$reset"
+    :showPredict="true"
+  >
     <template #instructions>
       <instructions></instructions>
     </template>
@@ -266,6 +272,13 @@ const dataTemplate = {
           class="text-blue-300 hover:underline"
           >技術說明</RouterLink
         >。
+      </div>
+    </template>
+
+    <template #predict-result>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ViolinPlot :predict_result="mockResult" model_used="S1"></ViolinPlot>
+        <ViolinPlot :predict_result="mockResult" model_used="S2"></ViolinPlot>
       </div>
     </template>
   </ModeLayout>
