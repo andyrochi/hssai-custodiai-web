@@ -124,7 +124,8 @@ const factorTitleMapping = {
 }
 
 const store = useMode3OptionsTextStore()
-const { allFactors, mockResult } = storeToRefs(store)
+const { allFactors, predictResult, showPredict, isLoading } = storeToRefs(store)
+const { getPrediction } = store
 
 const showModal = ref(false)
 const modalFactorType = ref<keyof Factors>('fatherFavorable')
@@ -150,14 +151,21 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
   allFactors.value[modalFactorType.value][modalFactorIndex.value].description = description
   showModal.value = false
 }
+
+const send = () => {
+  // perform validation
+  getPrediction()
+}
 </script>
 
 <template>
   <ModeLayout
     title="模式三：選項加文字輸入"
     modeType="因素與理由"
+    :predict="send"
     :reset="store.$reset"
-    :showPredict="true"
+    :isLoading="isLoading"
+    :showPredict="showPredict"
   >
     <template #instructions>
       <instructions></instructions>
@@ -252,8 +260,8 @@ const setFactorAndDescription = (factorKey: string, description: string) => {
 
     <template #predict-result>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ViolinPlot :predict_result="mockResult" model_used="C1"></ViolinPlot>
-        <ViolinPlot :predict_result="mockResult" model_used="C2"></ViolinPlot>
+        <ViolinPlot :predict_result="predictResult" model_used="C1"></ViolinPlot>
+        <ViolinPlot :predict_result="predictResult" model_used="C2"></ViolinPlot>
       </div>
     </template>
   </ModeLayout>
