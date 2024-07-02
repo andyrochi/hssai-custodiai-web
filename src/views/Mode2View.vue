@@ -7,7 +7,8 @@ import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 
 const store = useMode2TextStore()
-const { allFactors, mockResult } = storeToRefs(store)
+const { allFactors, predictResult, showPredict, isLoading } = storeToRefs(store)
+const { getPrediction } = store
 
 const dataTemplate = {
   advantage: [
@@ -217,14 +218,21 @@ const dataTemplate = {
     }
   ]
 }
+
+const send = () => {
+  // perform validation
+  getPrediction()
+}
 </script>
 
 <template>
   <ModeLayout
     title="模式二：文字輸入"
     modeType="理由文字"
+    :predict="send"
     :reset="store.$reset"
-    :showPredict="true"
+    :isLoading="isLoading"
+    :showPredict="showPredict"
   >
     <template #instructions>
       <instructions></instructions>
@@ -277,8 +285,8 @@ const dataTemplate = {
 
     <template #predict-result>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ViolinPlot :predict_result="mockResult" model_used="S1"></ViolinPlot>
-        <ViolinPlot :predict_result="mockResult" model_used="S2"></ViolinPlot>
+        <ViolinPlot :predict_result="predictResult" model_used="S1"></ViolinPlot>
+        <ViolinPlot :predict_result="predictResult" model_used="S2"></ViolinPlot>
       </div>
     </template>
   </ModeLayout>
