@@ -84,6 +84,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     allFactors.fatherUnfavorable = []
     allFactors.motherFavorable = []
     allFactors.motherUnfavorable = []
+    showPredict.value = false
   }
 
   const getPrediction = async () => {
