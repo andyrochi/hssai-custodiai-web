@@ -121,5 +121,5 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     }
   }
 
-  return { allFactors, $reset, getPrediction, predictResult, showPredict }
+  return { allFactors, $reset, getPrediction, predictResult, showPredict, isLoading }
 })

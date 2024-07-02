@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 
 const store = useMode1OptionsStore()
-const { allFactors, predictResult, showPredict } = storeToRefs(store)
+const { allFactors, predictResult, showPredict, isLoading } = storeToRefs(store)
 const { getPrediction } = store
 
 const factorsSource = [
@@ -82,6 +82,7 @@ const send = () => {
     modeType="因素選項"
     :predict="send"
     :reset="store.$reset"
+    :isLoading="isLoading"
     :showPredict="showPredict"
   >
     <template #instructions>

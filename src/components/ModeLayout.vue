@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BasicLayout from '@/components/BasicLayout.vue'
+import ProgressSpinner from 'primevue/progressspinner'
 
 interface Props {
   title: string
@@ -7,12 +8,14 @@ interface Props {
   reset?: Function
   predict?: Function
   showPredict?: boolean
+  isLoading?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   reset: () => {},
   predict: () => {},
-  showPredict: false
+  showPredict: false,
+  isLoading: false
 })
 </script>
 
@@ -22,7 +25,7 @@ withDefaults(defineProps<Props>(), {
     <div class="flex mt-6 pt-6 pb-3 px-4 rounded-xl bg-slate-100">
       <slot name="instructions"></slot>
     </div>
-    <div class="md:grid md:grid-cols-2 mt-6">
+    <div class="relative md:grid md:grid-cols-2 mt-6">
       <div class="pb-4 mb-4 border-b md:pb-0 md:mb-0 md:border-r md:border-b-0 md:px-3">
         <div>
           <h2 class="text-xl">
@@ -58,6 +61,10 @@ withDefaults(defineProps<Props>(), {
             <slot name="motherUnfavorable"></slot>
           </div>
         </div>
+      </div>
+      <div v-if="isLoading" class="absolute w-full h-full flex justify-center items-center">
+        <div class="absolute w-full h-full bg-white opacity-50"></div>
+        <ProgressSpinner />
       </div>
     </div>
 
