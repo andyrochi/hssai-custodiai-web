@@ -14,7 +14,7 @@
       :class="message.role === 'assistant' ? 'bg-white' : 'bg-amber-200 max-w-[70%]'"
     >
       <div
-        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        class="grid grid-cols-1 gap-4"
         v-if="message.status === 'predict' && message.role === 'assistant' && predictResult"
       >
         <ViolinPlot :predict_result="predictResult" model_used="S1"></ViolinPlot>

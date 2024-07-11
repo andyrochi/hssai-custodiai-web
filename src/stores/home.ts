@@ -48,6 +48,12 @@ export const useChatStore = defineStore('home', () => {
     }
   ])
   const summaryText = ref<string>('')
+  const summaryResult = reactive<SummaryResults>({
+    '對母親有利的敘述：': '',
+    '對母親不利的敘述：': '',
+    '對父親有利的敘述：': '',
+    '對父親不利的敘述：': ''
+  })
 
   const predictResult = reactive<PredictResponse>({
     S1: {
@@ -194,25 +200,26 @@ export const useChatStore = defineStore('home', () => {
     })
 
     if (summaryText.value) {
-      const summaryResults = parseSummary()
+      const result = parseSummary()
+      Object.assign(summaryResult, result)
       const payload: PredictRequest = {
         model: 'mode2',
         data: {
           AA: {
             Feature: [],
-            Sentence: summaryResults['對父親有利的敘述：']
+            Sentence: summaryResult['對父親有利的敘述：']
           },
           AD: {
             Feature: [],
-            Sentence: summaryResults['對父親不利的敘述：']
+            Sentence: summaryResult['對父親不利的敘述：']
           },
           RA: {
             Feature: [],
-            Sentence: summaryResults['對母親有利的敘述：']
+            Sentence: summaryResult['對母親有利的敘述：']
           },
           RD: {
             Feature: [],
-            Sentence: summaryResults['對母親不利的敘述：']
+            Sentence: summaryResult['對母親不利的敘述：']
           }
         }
       }
@@ -226,6 +233,7 @@ export const useChatStore = defineStore('home', () => {
           content: '以上是親權判決模型根據雙方當事人有利與不利的敘述，所做的判決結果預測：'
         })
         // interpret result
+        await interpretData('do-summary')
       } catch (err: any) {
         console.error(err)
       } finally {
@@ -240,6 +248,95 @@ export const useChatStore = defineStore('home', () => {
       })
     }
     isLoading.value = false
+  }
+
+  const interpretData = async (stage: Stage) => {
+    const interpretMessageHistory: Message[] = [
+      {
+        role: 'system',
+        status: 'predict',
+        content: `你現在是一個擁有多年數據分析經驗的家事調解分析師，你的工作是以最大化子女最佳利益的核心角度，根據要爭取親權的雙方當事人(父母)各自有利與不利的敘述，解讀兩種BERT-based判決模型(S1, S2)對於(判給父親、判給母親、判給雙方)等三種結果預測出來的機率分佈，結合雙方當事人的情況，做出合理的法官親權判決預測的解讀，以促進調解員根據你的數據解讀進行調解。以下是你的工作流程：
+        1. 收到使用者提供的雙方當事人有利與不利的敘述，以及有多個分別來自 S1, S2 模型所做的判決結果預測的數據，這些包括模型們對於三種可能的判決結果(判給父親、判給母親、判給雙方)，所預測出來的平均機率值、最小最大的機率值、Q1, Q2, Q3 的機率值以及這些機率值的標準差。
+        2. 請結合雙方當事人有利不利的敘述，以及多個模型所提供的三種可能的判決結果(判給父親、判給母親、判給雙方)的機率分佈，做出合理的解讀。這些機率分佈可以從平均值、標準差、q1, q2, q3 等數值分析，例如標準差越大的話，可能代表模型對這個預測結果比較沒有信心，這時候就需要提醒調解員和當事人審慎使用這個預測結果。記住，我們之所以提供多個來自兩種不同演算法的多個模型的預測機率分佈，就是希望提供一種可信賴的 AI，讓調解員和當事人不要只參考一種模型的預測結果就做出決定，因為每個模型都可能學到不同的 bias。
+        以下是一些可能出現的狀況：
+        * 有時候兩種算法的模型所產生的機率分佈可能是相反的，例如 S1 的模型預測判給母親的機率比較高，但是 S2 模型判給父親的機率卻比母親還要高，這時候你要結合雙方當事人有利不利的敘述，根據經驗去分析哪一種模型的結果比較可信以及原因是什麼，並且提醒調解員和當事人，這種情況發生，很可能因為遇到的法官不同而有不同的結果，(因為有時候某方當事人可能會很篤定自己一定會贏得親權，如果出現這種相反的結果，就可以給調解員解釋的空間，你可以多從這個角度去分析數據來協助後續調解員跟兩方的溝通)，另外可以請調解員多補充當事人的資訊，提供更詳盡的資料來預測判決結果。
+        * 有時候兩種算法所產生的機率分佈都差不多，都傾向判給某一方，這時候你也要分析雙方當事人是什麼樣的條件差距，使得模型會有這樣一致的結果，並建議調解員和當事人由於分佈一致，可以放心參考本次預測結果。
+        * 有時候可能是S1的模型傾向判給雙方，但是S2的模型，判給父親的平均機率是 49% ，判給母親的機率是 45% 之類的，這種情況雖然兩種模型預測出來的結果不同，但其實都意味著雙方父母的條件對孩子都是差不多有利或不利的，法官有很高的機率會交給雙方共同擁有親權。
+        
+        請你嚴格遵守上面的工作流程執行，包括參考雙方當事人以及預測數據的統計資料進行數據解讀，你被禁止使用 Markdown 語法，你只能用純文字和數字輸出，否則你會遭到罰款！
+        `
+      },
+      {
+        role: 'user',
+        status: 'predict',
+        content: `以下是雙方當事人有利不利的敘述：
+        對母親有利的敘述：當事人與孩子的親子互動自然，具有良好的親職能力。能適時的指正孩子的不良行為，具有基本的教養能力。母親阿霞歷來是孩子的主要照顧者，孩子與母親建立了深厚的感情依附關係，並且對孩子的日常起居提供了充分的照顧。母親已規劃具體且階段性的未來教養計畫，突顯其對孩子教育和情感發展的長期承諾。 對母親不利的敘述：當事人目前無穩定工作和收入來源，經濟狀況可能影響其提供孩子更廣泛的教育和生活資源的能力。母親缺乏較高的教育背景，且在台灣沒有其他親友可以協助照顧孩子，這可能對其提供孩子全面支持造成困難。 對父親有利的敘述：當事人有穩定及較高的經濟狀況，可以為孩子提供更充足的教育和生活資源。父親表現出對孩子的關懷，定期通過通話了解孩子的日常生活和學習情況，顯示其對與孩子保持聯繫的高度意願。 對父親不利的敘述：當事人過去曾有將孩子獨留家中的情形，沒有充分注意孩子的日常需要，這可能對孩子的安全形成風險。儘管有積極的態度，但目前對於如何具體教養孩子仍缺乏明確的規劃和準備，這可能影響他作為主要照顧者的能力。
+        以下是多個來自兩種不同演算法所預測出來的判決結果機率分佈：
+        1. S1模型：
+          *判給父親: [平均機率：12.438500921548421, 最小機率：0, 最大機率：99.83, Q1:0.07, Q2:0.56, Q3:4.59, 標準差:27.92]
+          *判給母親: [平均機率：45.331100512521516, 最小機率：0.01, 最大機率：100, Q1:1.06, Q2:19.87, Q3:98.12, 標準差:45.28]
+          *判給雙方: [平均機率：42.230399545115084, 最小機率：0, 最大機率：99.98, Q1:1.41, Q2:19.75, Q3:92.97, 標準差:43.31]
+        2. 
+          *判給父親: [平均機率：18.312848778841726, 最小機率：0, 最大機率：90.1, Q1:1.39, Q2:11.02, Q3:24.63, 標準差:22.33]
+          *判給母親: [平均機率：51.317591493110136, 最小機率：0.02, 最大機率：99.48, Q1:17.15, Q2:54.37, Q3:85.47, 標準差:34.89]
+          *判給雙方: [平均機率：30.369559255583834, 最小機率：0.35, 最大機率：99.12, Q1:5.81, Q2:24.61, Q3:43.36, 標準差:28.41]
+        請開始結合雙方當事人的有利不利條件，與上面多個模型預測的機率分佈，進行結果分析，以協助調解員調解當事人。
+        `
+      },
+      {
+        role: 'assistant',
+        status: 'predict',
+        content: `鑑於兩個模型的數據，結合當事人情況，以下是我的建議：
+        1. 母親方案的可能性高：兩個模型都顯示判給母親的機率相對較高，這與她作為主要照顧者的事實相符。但調解員應注意她的經濟和教育狀況，可能需要提供額外支持或資源。
+        2. 考慮共同親權的可能性：如果法官認為父親能改善對孩子的照顧方式，共同親權也可能是一個適合的選擇，特別是因為兩個模型在許多情況下都給予了不低的機率。
+        3. 積極溝通和信息補充：鑑於標準差較大，表明模型預測存在不確定性，建議調解員在實際操作中積極收集更多具體信息，以做出最符合孩子最佳利益的決策。`
+      },
+      {
+        role: 'user',
+        status: 'predict',
+        content: `以下是雙方當事人有利不利的敘述：
+        對母親有利的敘述：${summaryResult['對母親有利的敘述：']} 
+        對母親不利的敘述：${summaryResult['對母親不利的敘述：']} 
+        對父親有利的敘述：${summaryResult['對父親有利的敘述：']}  
+        對父親不利的敘述：${summaryResult['對父親不利的敘述：']} 
+        以下是多個來自兩種不同演算法所預測出來的判決結果機率分佈：
+        1. S1模型：
+          *判給父親: [平均機率：${predictResult.S1.Applicant.avg_prob}, 最小機率：${predictResult.S1.Applicant.min}, 最大機率：${predictResult.S1.Applicant.max}, Q1:${predictResult.S1.Applicant.q1}, Q2:${predictResult.S1.Applicant.q2}, Q3:${predictResult.S1.Applicant.q3}, 標準差:${predictResult.S1.Applicant.std}]
+          *判給母親: [平均機率：${predictResult.S1.Respondent.avg_prob}, 最小機率：${predictResult.S1.Respondent.min}, 最大機率：${predictResult.S1.Respondent.max}, Q1:${predictResult.S1.Respondent.q1}, Q2:${predictResult.S1.Respondent.q2}, Q3:${predictResult.S1.Respondent.q3}, 標準差:${predictResult.S1.Respondent.std}]
+          *判給雙方: [平均機率：${predictResult.S1.Both.avg_prob}, 最小機率：${predictResult.S1.Both.min}, 最大機率：${predictResult.S1.Both.max}, Q1:${predictResult.S1.Both.q1}, Q2:${predictResult.S1.Both.q2}, Q3:${predictResult.S1.Both.q3}, 標準差:${predictResult.S1.Both.std}]
+        2. S2
+          *判給父親: [平均機率：${predictResult.S2.Applicant.avg_prob}, 最小機率：${predictResult.S2.Applicant.min}, 最大機率：${predictResult.S2.Applicant.max}, Q1:${predictResult.S2.Applicant.q1}, Q2:${predictResult.S2.Applicant.q2}, Q3:${predictResult.S2.Applicant.q3}, 標準差:${predictResult.S2.Applicant.std}]
+          *判給母親: [平均機率：${predictResult.S2.Respondent.avg_prob}, 最小機率：${predictResult.S2.Respondent.min}, 最大機率：${predictResult.S2.Respondent.max}, Q1:${predictResult.S2.Respondent.q1}, Q2:${predictResult.S2.Respondent.q2}, Q3:${predictResult.S2.Respondent.q3}, 標準差:${predictResult.S2.Respondent.std}]
+          *判給雙方: [平均機率：${predictResult.S2.Both.avg_prob}, 最小機率：${predictResult.S2.Both.min}, 最大機率：${predictResult.S2.Both.max}, Q1:${predictResult.S2.Both.q1}, Q2:${predictResult.S2.Both.q2}, Q3:${predictResult.S2.Both.q3}, 標準差:${predictResult.S1.Both.std}]
+          請開始根據雙方當事人的有利不利條件，與上面多個模型預測的機率分佈，進行結果分析，請根據雙方的有利不利的事實進行解讀，避免在解讀過程中加入自己對父母親角色的性別刻板印象，以協助調解員調解當事人。
+        `
+      }
+    ]
+    try {
+      const chatRequest: ChatRequest = {
+        ...defaultChatRequest,
+        messages: interpretMessageHistory,
+        stage: stage
+      }
+
+      const response = await sendChat(chatRequest)
+      if (response) {
+        const reader = response?.body?.getReader()
+        const status = response.status
+        if (!reader) throw new Error('[Error] reader is undefined')
+
+        // Await the asynchronous readStream function
+        await readStream(reader, status)
+        appendLastMessageContent(
+          '關於數據分析的結果是否還有需要討論的問題？如果沒有的話，在這邊提醒調解員，當您熟悉本套系統後，可直接點選上方導覽列的模式一、二、三直接進行判決預測呦！完成判決結果預測後，調解員也可帶領當事人點選導覽列上方的『友善資源』，共同討論適合當事人使用的友善社會資源，以幫助當事人在離婚後適應生活的變化。謝謝！'
+        )
+      }
+    } catch (error) {
+      // Handle error
+      console.error(error)
+    } finally {
+      isLoading.value = false
+    }
   }
 
   const appendLastMessageContent = (text: string) => {
