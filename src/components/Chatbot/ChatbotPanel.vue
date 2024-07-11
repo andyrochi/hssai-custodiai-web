@@ -5,8 +5,8 @@ import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/home'
 
 const store = useChatStore()
-const { inputMessage, messageHistory, isLoading } = storeToRefs(store)
-const { sendMessage } = store
+const { inputMessage, messageHistory, isLoading, currentStatus, predictResult } = storeToRefs(store)
+const { sendMessage, handleStartPredict } = store
 
 const textarea = ref<HTMLTextAreaElement | null>(null)
 
@@ -61,9 +61,31 @@ const onSubmit = () => {
           v-for="(msgObj, index) in messageHistory?.filter((msgObj) => msgObj.role !== 'system')"
           :key="index"
           :message="msgObj"
+          :predictResult="msgObj.status === 'predict' ? predictResult : undefined"
         ></ChatbotMessage>
       </div>
       <form class="w-full" @submit.prevent="onSubmit">
+        <div class="w-full flex justify-center mb-6">
+          <!-- actions container -->
+          <button
+            v-if="currentStatus === 'initial'"
+            class="border border-slate-200 rounded-xl px-2 py-2 bg-white shadow hover:bg-slate-50"
+            @click="inputMessage = '好！'"
+          >
+            好，我準備開始對話了！
+          </button>
+
+          <div v-if="currentStatus === 'summary'">
+            <span class="text-slate-600 text-sm">如果不需修改，請點擊按鈕：</span>
+            <button
+              class="border border-slate-200 rounded-xl px-2 py-2 bg-white shadow hover:bg-slate-50"
+              @click="handleStartPredict"
+              type="button"
+            >
+              開始預測判決結果！
+            </button>
+          </div>
+        </div>
         <label for="chat" class="sr-only">Your message</label>
         <div
           class="flex items-center mx-3 my-3 md:mx-6 md:mb-6 px-3 py-2 border rounded-xl bg-white overflow-hidden focus-within:border-slate-300 focus-within:shadow"

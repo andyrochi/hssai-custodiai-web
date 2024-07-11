@@ -1,12 +1,32 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { sendChat } from '@/api/modules/chatApi'
 import type { Message, Stage, ChatRequest } from '@/models/chatModels'
+import { predictMode } from '@/api/modules/predictApi'
+import type { PredictRequest, PredictResponse } from '@/models/predictModels'
 
 const defaultChatRequest: ChatRequest = {
   model: 'gpt-4o',
   messages: [],
   stage: 'collect-info'
+}
+
+const defaultProbabilityStats = {
+  all_probs: [],
+  avg_prob: 0,
+  max: 0,
+  min: 0,
+  q1: 0,
+  q2: 0,
+  q3: 0,
+  std: 0
+}
+
+interface SummaryResults {
+  '對母親有利的敘述：': string
+  '對母親不利的敘述：': string
+  '對父親有利的敘述：': string
+  '對父親不利的敘述：': string
 }
 
 export const useChatStore = defineStore('home', () => {
@@ -27,6 +47,44 @@ export const useChatStore = defineStore('home', () => {
         '調解委員您好！我是Le姊，一個專門設計來協助處理家事調解相關問題的對話機器人。我可以使用適當的法律用語以及親權相關的法律概念，協助您逐步釐清當事人的情況，並提供親權判決結果預測與專業建議以及推薦適合當事人的的友善資源，以協助您促進雙方達成共識。當然，若在對話過程中，您的問題已超出我程式設計所涵蓋的範圍，我也會建議您直接尋求專業的法律諮詢。現在，你準備好開始對話了嗎？'
     }
   ])
+  const summaryText = ref<string>('')
+
+  const predictResult = reactive<PredictResponse>({
+    S1: {
+      Applicant: { ...defaultProbabilityStats },
+      Both: { ...defaultProbabilityStats },
+      Respondent: { ...defaultProbabilityStats }
+    },
+    S2: {
+      Applicant: { ...defaultProbabilityStats },
+      Both: { ...defaultProbabilityStats },
+      Respondent: { ...defaultProbabilityStats }
+    }
+  })
+
+  const currentStatus = computed(() => {
+    return messageHistory[messageHistory.length - 1].status
+  })
+  // summary watcher, contains side effects
+  watch(isLoading, (newValue: boolean, oldValue: boolean) => {
+    if (oldValue === true && newValue === false) {
+      const histLength = messageHistory.length
+      console.log('received message!')
+      console.log('new:', messageHistory[histLength - 1].content)
+      const isSummary =
+        messageHistory[histLength - 1].content.includes('<SUMMARY>') &&
+        messageHistory[histLength - 1].role === 'assistant'
+      if (isSummary) {
+        currentStage.value = 'do-summary'
+        messageHistory[messageHistory.length - 1].status = 'summary'
+        messageHistory[histLength - 1].content = messageHistory[histLength - 1].content.replace(
+          '<SUMMARY>',
+          ''
+        )
+        summaryText.value = messageHistory[histLength - 1].content
+      }
+    }
+  })
 
   const clearMessage = () => {
     inputMessage.value = ''
@@ -36,14 +94,15 @@ export const useChatStore = defineStore('home', () => {
     messageHistory.push({ role: 'assistant', status: 'normal', content: '' })
   }
 
-  const sendMessage = (messageContent: string) => {
+  const sendMessage = async (messageContent: string) => {
     const newUserMessage: Message = {
       role: 'user',
       status: 'normal',
       content: String(messageContent)
     }
+
+    isLoading.value = true
     try {
-      isLoading.value = true
       messageHistory.push(newUserMessage)
       clearMessage()
 
@@ -53,22 +112,22 @@ export const useChatStore = defineStore('home', () => {
         stage: currentStage.value
       }
 
-      sendChat(chatRequest).then((response) => {
-        if (response) {
-          const reader = response?.body?.getReader()
-          const status = response.status
-          if (!reader) throw '[Error] reader is undefined'
+      const response = await sendChat(chatRequest)
+      if (response) {
+        const reader = response?.body?.getReader()
+        const status = response.status
+        if (!reader) throw new Error('[Error] reader is undefined')
 
-          // we construct an empty message then fill it up for display
-          constructAssistantMessage()
+        // We construct an empty message then fill it up for display
+        constructAssistantMessage()
 
-          readStream(reader, status)
-        }
-        isLoading.value = false
-      })
+        // Await the asynchronous readStream function
+        await readStream(reader, status)
+      }
     } catch (error) {
-      // handle error
+      // Handle error
       console.error(error)
+    } finally {
       isLoading.value = false
     }
   }
@@ -97,11 +156,90 @@ export const useChatStore = defineStore('home', () => {
       const chunk = partialLine + decodedText
       appendLastMessageContent(chunk)
     }
-    // check if summary
-    // if (this.messageList[this.messageList.length - 1].content.includes('<SUMMARY>')) {
-    //   this.currentStage = 'do-summary';
-    //   this.changeLastMessageStatus('summary');
-    // }
+  }
+
+  const parseSummary = (): SummaryResults => {
+    const text = summaryText.value
+    const results: SummaryResults = {
+      '對母親有利的敘述：': '',
+      '對母親不利的敘述：': '',
+      '對父親有利的敘述：': '',
+      '對父親不利的敘述：': ''
+    }
+
+    const labels: (keyof SummaryResults)[] = [
+      '對母親有利的敘述：',
+      '對母親不利的敘述：',
+      '對父親有利的敘述：',
+      '對父親不利的敘述：'
+    ]
+
+    // 抽取每個標籤後的文本
+    labels.forEach((label, index) => {
+      const start = text.indexOf(label) + label.length
+      const end = index < labels.length - 1 ? text.indexOf(labels[index + 1]) : text.length
+      results[label] = text.substring(start, end).trim()
+    })
+
+    return results
+  }
+
+  const handleStartPredict = async () => {
+    isLoading.value = true
+    currentStage.value = 'do-predict'
+    messageHistory.push({
+      role: 'user',
+      status: 'normal',
+      content: '你總結得很好，不需要更改，請開始進行判決結果預測。'
+    })
+
+    if (summaryText.value) {
+      const summaryResults = parseSummary()
+      const payload: PredictRequest = {
+        model: 'mode2',
+        data: {
+          AA: {
+            Feature: [],
+            Sentence: summaryResults['對父親有利的敘述：']
+          },
+          AD: {
+            Feature: [],
+            Sentence: summaryResults['對父親不利的敘述：']
+          },
+          RA: {
+            Feature: [],
+            Sentence: summaryResults['對母親有利的敘述：']
+          },
+          RD: {
+            Feature: [],
+            Sentence: summaryResults['對母親不利的敘述：']
+          }
+        }
+      }
+
+      try {
+        const response = await predictMode(payload)
+        Object.assign(predictResult, response)
+        messageHistory.push({
+          role: 'assistant',
+          status: 'predict',
+          content: '以上是親權判決模型根據雙方當事人有利與不利的敘述，所做的判決結果預測：'
+        })
+        // interpret result
+      } catch (err: any) {
+        console.error(err)
+      } finally {
+        isLoading.value = false
+      }
+    } else {
+      messageHistory.push({
+        role: 'assistant',
+        status: 'normal',
+        content:
+          '目前還沒有取得雙方當事人的詳細敘述，無法做判決結果預測，你是否可以再跟我補充一些雙方當事人的訊息呢？'
+      })
+    }
+    isLoading.value = false
   }
 
   const appendLastMessageContent = (text: string) => {
@@ -109,5 +247,13 @@ export const useChatStore = defineStore('home', () => {
     messageHistory[lastIndex].content += text
   }
 
-  return { inputMessage, isLoading, messageHistory, sendMessage }
+  return {
+    inputMessage,
+    currentStatus,
+    predictResult,
+    isLoading,
+    messageHistory,
+    sendMessage,
+    handleStartPredict
+  }
 })

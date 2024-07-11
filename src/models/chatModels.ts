@@ -22,12 +22,6 @@ export interface RoleAlias {
   src: string
 }
 
-export interface PredictResult {
-  mode1: Record<string, number>
-  mode2: Record<string, number>
-  mode3: Record<string, number>
-}
-
 export interface ExtractResult {
   [key: string]: string
 }
