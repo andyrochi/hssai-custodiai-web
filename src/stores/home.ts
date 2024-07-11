@@ -11,7 +11,7 @@ const defaultChatRequest: ChatRequest = {
 
 export const useChatStore = defineStore('home', () => {
   const isLoading = ref<boolean>(false)
-  const message = ref<string | null>('')
+  const inputMessage = ref<string | null>('')
   const currentStage = ref<Stage>('collect-info')
   const messageHistory = reactive<Message[]>([
     {
@@ -29,7 +29,7 @@ export const useChatStore = defineStore('home', () => {
   ])
 
   const clearMessage = () => {
-    message.value = ''
+    inputMessage.value = ''
   }
 
   const constructAssistantMessage = () => {
@@ -46,33 +46,36 @@ export const useChatStore = defineStore('home', () => {
       isLoading.value = true
       messageHistory.push(newUserMessage)
       clearMessage()
+
       const chatRequest: ChatRequest = {
         ...defaultChatRequest,
         messages: messageHistory,
         stage: currentStage.value
       }
+
       sendChat(chatRequest).then((response) => {
-        console.log('>>>response', response?.body, response?.status)
         if (response) {
           const reader = response?.body?.getReader()
           const status = response.status
-          if (!reader) throw 'reader is undefined'
+          if (!reader) throw '[Error] reader is undefined'
+
+          // we construct an empty message then fill it up for display
           constructAssistantMessage()
+
           readStream(reader, status)
         }
         isLoading.value = false
       })
     } catch (error) {
       // handle error
+      console.error(error)
       isLoading.value = false
     }
   }
 
   const readStream = async (reader: ReadableStreamDefaultReader<Uint8Array>, status: number) => {
-    console.log('>>>Enter readerStream()')
     const partialLine = ''
-    const decoder = new TextDecoder('utf-8') // 假设你在函数中使用了解码器
-
+    const decoder = new TextDecoder('utf-8')
     let notComplete = true
     while (notComplete) {
       const { value, done } = await reader.read()
@@ -106,5 +109,5 @@ export const useChatStore = defineStore('home', () => {
     messageHistory[lastIndex].content += text
   }
 
-  return { message, isLoading, messageHistory, sendMessage }
+  return { inputMessage, isLoading, messageHistory, sendMessage }
 })

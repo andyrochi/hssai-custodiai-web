@@ -4,6 +4,7 @@ import type { ChatRequest, ChatResponse } from '@/models/chatModels'
 
 export const sendChat = async (payload: ChatRequest): Promise<ChatResponse> => {
   try {
+    // axios does not support streaming response on client side, use fetch instead.
     const response = await fetch(`${apiClient.defaults.baseURL}/send-messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

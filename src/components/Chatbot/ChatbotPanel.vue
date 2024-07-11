@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/home'
 
 const store = useChatStore()
-const { message, messageHistory, isLoading } = storeToRefs(store)
+const { inputMessage, messageHistory, isLoading } = storeToRefs(store)
 const { sendMessage } = store
 
 const textarea = ref<HTMLTextAreaElement | null>(null)
@@ -18,9 +18,9 @@ const adjustTextarea = () => {
 }
 
 const onSubmit = () => {
-  console.log(`send message: [${message.value}]`)
+  console.log(`send message: [${inputMessage.value}]`)
   // trim message
-  const trimmedMessage = message.value?.trim()
+  const trimmedMessage = inputMessage.value?.trim()
   if (!trimmedMessage) {
     alert('Message cannot be empty')
     return
@@ -28,7 +28,7 @@ const onSubmit = () => {
   // submit form
   sendMessage(trimmedMessage)
   // submit complete
-  message.value = ''
+  inputMessage.value = ''
   // handle resize event
   nextTick(adjustTextarea)
 }
@@ -76,7 +76,7 @@ const onSubmit = () => {
             placeholder="詢問Le姊..."
             @input="adjustTextarea"
             @keypress.enter.exact.prevent="onSubmit"
-            v-model="message"
+            v-model="inputMessage"
             :disabled="isLoading"
           ></textarea>
           <button
