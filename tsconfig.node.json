@@ -5,8 +5,7 @@
     "vitest.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
-    "playwright.config.*",
-    "src/utils/markdown-it-class.ts" // ts build workout, TODO: fixit
+    "playwright.config.*"
   ],
   "compilerOptions": {
     "composite": true,

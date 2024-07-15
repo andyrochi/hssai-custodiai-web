@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import MarkdownIt from 'markdown-it'
-import markdownItTagClass from '@/utils/markdown-it-class'
+import markdownItClass from 'markdown-it-class'
 
-const markdown = new MarkdownIt().use(markdownItTagClass, {
+const markdown = new MarkdownIt().use(markdownItClass, {
   h1: ['text-2xl', 'font-bold', 'my-2.5'],
   h2: ['text-xl', 'font-bold', 'my-2.5'],
   h3: ['text-lg', 'font-bold', 'my-2.5'],
