@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
-import markdownItClass from 'markdown-it-class'
+import markdownItTagClass from './src/utils/markdown-it-class'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,7 +15,7 @@ export default defineConfig({
       // configure markdownIt plugins 
       // see https://github.com/unplugin/unplugin-vue-markdown?tab=readme-ov-file#options
       markdownItSetup(md) {
-        md.use(markdownItClass, {
+        md.use(markdownItTagClass, {
           h1: ['text-2xl', 'font-bold', 'my-2.5'],
           h2: ['text-xl', 'font-bold', 'my-2.5'],
           h3: ['text-lg', 'font-bold', 'my-2.5'],
