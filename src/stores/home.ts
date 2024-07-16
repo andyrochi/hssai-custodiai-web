@@ -456,11 +456,11 @@ export const useChatStore = defineStore('home', () => {
       columns: [
         {
           image: plot1Image,
-          width: 200
+          width: 220
         },
         {
           image: plot2Image,
-          width: 200
+          width: 220
         }
       ]
     })

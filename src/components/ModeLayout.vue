@@ -9,13 +9,17 @@ interface Props {
   predict?: Function
   showPredict?: boolean
   isLoading?: boolean
+  isInterpreting?: boolean
+  exportResult?: Function
 }
 
 withDefaults(defineProps<Props>(), {
   reset: () => {},
   predict: () => {},
+  exportResult: () => {},
   showPredict: false,
-  isLoading: false
+  isLoading: false,
+  isInterpreting: false
 })
 </script>
 
@@ -91,6 +95,17 @@ withDefaults(defineProps<Props>(), {
         "
       >
         開始預測
+      </button>
+      <button
+        class="text-xl bg-orange-100 px-4 py-2 rounded-lg text-orange-800 block hover:bg-orange-50"
+        @click="
+          () => {
+            exportResult()
+          }
+        "
+        :disabled="isLoading || isInterpreting"
+      >
+        匯出結果
       </button>
     </div>
 
