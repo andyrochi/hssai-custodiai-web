@@ -5,9 +5,11 @@ import TextInputComponent from '@/components/Mode2/TextInputComponent.vue'
 import { useMode2TextStore } from '@/stores/mode2Text'
 import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
+import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
 
 const store = useMode2TextStore()
-const { allFactors, predictResult, showPredict, isLoading } = storeToRefs(store)
+const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
+  storeToRefs(store)
 const { getPrediction } = store
 
 const dataTemplate = {
@@ -288,6 +290,10 @@ const send = () => {
         <ViolinPlot :predict_result="predictResult" model_used="S1"></ViolinPlot>
         <ViolinPlot :predict_result="predictResult" model_used="S2"></ViolinPlot>
       </div>
+    </template>
+
+    <template #interpreted-result>
+      <MarkdownRenderer :source="interpretedResults"></MarkdownRenderer>
     </template>
   </ModeLayout>
 </template>

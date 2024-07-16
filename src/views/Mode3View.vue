@@ -9,6 +9,7 @@ import { useMode3OptionsTextStore } from '@/stores/mode3OptionsText'
 import type { Factors } from '@/stores/mode3OptionsText'
 import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
+import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
 
 interface factorSourceObj {
   label: string
@@ -124,7 +125,8 @@ const factorTitleMapping = {
 }
 
 const store = useMode3OptionsTextStore()
-const { allFactors, predictResult, showPredict, isLoading } = storeToRefs(store)
+const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
+  storeToRefs(store)
 const { getPrediction } = store
 
 const showModal = ref(false)
@@ -263,6 +265,9 @@ const send = () => {
         <ViolinPlot :predict_result="predictResult" model_used="C1"></ViolinPlot>
         <ViolinPlot :predict_result="predictResult" model_used="C2"></ViolinPlot>
       </div>
+    </template>
+    <template #interpreted-result>
+      <MarkdownRenderer :source="interpretedResults"></MarkdownRenderer>
     </template>
   </ModeLayout>
 
