@@ -109,6 +109,8 @@ withDefaults(defineProps<Props>(), {
             >技術說明</RouterLink
           >」中的「五、模型限制(以判給雙方的情形為例)」
         </div>
+        <h2 class="text-xl font-semibold">結果解讀</h2>
+        <slot name="interpreted-result"></slot>
       </div>
     </div>
   </BasicLayout>

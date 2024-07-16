@@ -5,9 +5,11 @@ import CustodyMultiSelect from '@/components/CustodyMultiSelect.vue'
 import { useMode1OptionsStore } from '@/stores/mode1Options'
 import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
+import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
 
 const store = useMode1OptionsStore()
-const { allFactors, predictResult, showPredict, isLoading } = storeToRefs(store)
+const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
+  storeToRefs(store)
 const { getPrediction } = store
 
 const factorsSource = [
@@ -160,6 +162,10 @@ const send = () => {
         <ViolinPlot :predict_result="predictResult" model_used="L1"></ViolinPlot>
         <ViolinPlot :predict_result="predictResult" model_used="L2"></ViolinPlot>
       </div>
+    </template>
+
+    <template #interpreted-result>
+      <MarkdownRenderer :source="interpretedResults"></MarkdownRenderer>
     </template>
   </ModeLayout>
 </template>

@@ -17,7 +17,7 @@ const markdown = new MarkdownIt().use(markdownItClass, {
   p: ['text-base'],
   a: ['hover:underline', 'text-sky-500'],
   ul: ['list-outside', 'list-disc', 'ps-5'],
-  ol: ['list-inside', 'list-decimal'],
+  ol: ['list-outside', 'list-decimal', 'ps-5'],
   table: ['table-auto', 'border-collapse', 'w-full', 'rounded-lg', 'border'],
   th: ['font-bold', 'text-slate-600', 'border-b', 'px-1.5', 'py-3', 'bg-slate-100'],
   td: ['border', 'border-slate-200', 'px-1.5', 'py-3']
