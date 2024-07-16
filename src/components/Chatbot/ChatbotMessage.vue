@@ -17,8 +17,16 @@
         class="grid grid-cols-1 gap-4"
         v-if="message.status === 'predict' && message.role === 'assistant' && predictResult"
       >
-        <ViolinPlot :predict_result="predictResult" model_used="S1"></ViolinPlot>
-        <ViolinPlot :predict_result="predictResult" model_used="S2"></ViolinPlot>
+        <ViolinPlot
+          :predict_result="predictResult"
+          model_used="S1"
+          :setRefFunction="setPlot1Ref"
+        ></ViolinPlot>
+        <ViolinPlot
+          :predict_result="predictResult"
+          model_used="S2"
+          :setRefFunction="setPlot2Ref"
+        ></ViolinPlot>
       </div>
       <MarkdownRenderer :source="message.content"></MarkdownRenderer>
       <!-- {{ message.content }} -->
@@ -31,10 +39,14 @@ import type { Message } from '@/models/chatModels'
 import type { PredictResponse } from '@/models/predictModels'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
+import { useChatStore } from '@/stores/home'
 defineProps<{
   message: Message
   predictResult?: PredictResponse
 }>()
+
+const store = useChatStore()
+const { setPlot1Ref, setPlot2Ref } = store
 </script>
 
 <style scoped></style>

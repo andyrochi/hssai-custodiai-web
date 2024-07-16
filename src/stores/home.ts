@@ -1,9 +1,12 @@
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, pushScopeId } from 'vue'
 import { defineStore } from 'pinia'
 import { sendChat } from '@/api/modules/chatApi'
 import type { Message, Stage, ChatRequest } from '@/models/chatModels'
 import { predictMode } from '@/api/modules/predictApi'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
+import pdfMake from 'pdfmake'
+import VuePlotly from 'vue3-plotly-ts'
+import Plotly from 'plotly.js-dist-min'
 
 const defaultChatRequest: ChatRequest = {
   model: 'gpt-4o',
@@ -54,6 +57,17 @@ export const useChatStore = defineStore('home', () => {
     '對父親有利的敘述：': '',
     '對父親不利的敘述：': ''
   })
+
+  const plot1Ref = ref<typeof VuePlotly>()
+  const plot2Ref = ref<typeof VuePlotly>()
+
+  // define ref in store, and pass function to ViolinPlot to set it accordingly
+  const setPlot1Ref = (ref: any) => {
+    plot1Ref.value = ref
+  }
+  const setPlot2Ref = (ref: any) => {
+    plot2Ref.value = ref
+  }
 
   const predictResult = reactive<PredictResponse>({
     S1: {
@@ -344,6 +358,135 @@ export const useChatStore = defineStore('home', () => {
     messageHistory[lastIndex].content += text
   }
 
+  const exportResult = async () => {
+    const fonts = {
+      NotoSansTC: {
+        normal: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2',
+        bold: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2'
+      }
+    }
+
+    const styles = {
+      header: {
+        fontSize: 22,
+        bold: true
+      },
+      description: {
+        fontSize: 12
+      },
+      normal: {
+        margin: [0, 0, 0, 0],
+        fontSize: 12
+      },
+      user: {
+        margin: [0, 12, 0, 0],
+        fontSize: 14,
+        bold: true
+      }
+    }
+
+    const content: any[] = [
+      {
+        text: 'Le 姊家事協商好夥伴',
+        style: 'header'
+      },
+      {
+        text: `匯出日期：${new Date().toLocaleString('zh-TW')}`,
+        style: 'description'
+      }
+    ]
+
+    // parse message history
+    interface pdfContent {
+      text: string
+      style: string
+    }
+
+    const predictIndex = messageHistory.findIndex(
+      (curMessage: Message) => curMessage.status === 'predict'
+    )
+    const reduceMessagesToPdf = (prevArr: pdfContent[], curMessage: Message) => {
+      if (curMessage.role !== 'system') {
+        if (curMessage.role === 'assistant') {
+          prevArr.push({
+            text: 'Le姊:',
+            style: 'user'
+          })
+        }
+        if (curMessage.role === 'user') {
+          prevArr.push({
+            text: '你:',
+            style: 'user'
+          })
+        }
+        prevArr.push({
+          text: curMessage.content,
+          style: 'normal'
+        })
+      }
+      return prevArr
+    }
+    // parse until prediction
+    const parsedMessage = messageHistory
+      .slice(0, predictIndex)
+      .reduce<pdfContent[]>(reduceMessagesToPdf, [])
+
+    content.push(...parsedMessage)
+
+    // parse plot
+    const plot1RefGraphDivId = plot1Ref.value?.plotlyId
+    const plot2RefGraphDivId = plot2Ref.value?.plotlyId
+    const plot1Image = await Plotly.toImage(plot1RefGraphDivId, {
+      format: 'png',
+      height: 480,
+      width: 480
+    })
+    const plot2Image = await Plotly.toImage(plot2RefGraphDivId, {
+      format: 'png',
+      height: 480,
+      width: 480
+    })
+
+    content.push({
+      text: 'Le姊:',
+      style: 'user'
+    })
+    content.push({
+      alignment: 'justify',
+      columns: [
+        {
+          image: plot1Image,
+          width: 200
+        },
+        {
+          image: plot2Image,
+          width: 200
+        }
+      ]
+    })
+
+    // put predictionResults
+    const predictMessages = messageHistory
+      .slice(predictIndex)
+      .reduce<pdfContent[]>(reduceMessagesToPdf, [])
+
+    content.push(...predictMessages)
+
+    pdfMake
+      .createPdf(
+        {
+          content: content,
+          defaultStyle: {
+            font: 'NotoSansTC'
+          },
+          styles: styles
+        },
+        null,
+        fonts
+      )
+      .open()
+  }
+
   return {
     inputMessage,
     currentStatus,
@@ -351,6 +494,9 @@ export const useChatStore = defineStore('home', () => {
     isLoading,
     messageHistory,
     sendMessage,
-    handleStartPredict
+    handleStartPredict,
+    exportResult,
+    setPlot1Ref,
+    setPlot2Ref
   }
 })

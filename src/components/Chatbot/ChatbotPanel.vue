@@ -6,7 +6,7 @@ import { useChatStore } from '@/stores/home'
 
 const store = useChatStore()
 const { inputMessage, messageHistory, isLoading, currentStatus, predictResult } = storeToRefs(store)
-const { sendMessage, handleStartPredict } = store
+const { sendMessage, handleStartPredict, exportResult } = store
 
 const textarea = ref<HTMLTextAreaElement | null>(null)
 
@@ -50,7 +50,12 @@ const onSubmit = () => {
         <slot name="info-area"> </slot>
         <button type="button">
           <!-- download button -->
-          <img src="@/assets/download-icon.svg" alt="download-icon" class="h-8" />
+          <img
+            src="@/assets/download-icon.svg"
+            alt="download-icon"
+            class="h-8"
+            @click="exportResult"
+          />
         </button>
       </div>
     </div>

@@ -1,19 +1,31 @@
 <template>
   <div>
-    <VuePlotly :data="plotData" :layout="plotLayout" :config="plotConfig"></VuePlotly>
+    <VuePlotly :data="plotData" :layout="plotLayout" :config="plotConfig" ref="plotRef"></VuePlotly>
   </div>
 </template>
 
 <script setup lang="js">
-// TODO: Change script ot typescript
+// TODO: Change script to typescript
+// ref: https://github.com/boscoh/vue3-plotly-ts/
 import { ref, watch, onMounted } from 'vue'
 import VuePlotly from 'vue3-plotly-ts'
 import { roundToTwo } from '@/utils'
 
 const props = defineProps({
   predict_result: Object,
-  model_used: String
+  model_used: String,
+  refStr: {
+    type: String,
+    default: ''
+  },
+  setRefFunction: {
+    type: Function,
+    default: () => {}
+  }
 })
+
+const plotRef = ref(null)
+
 const plotData = ref([])
 const plotLayout = ref({
   yaxis: { zeroline: false },
@@ -173,5 +185,6 @@ watch(
 
 onMounted(() => {
   updatePlot()
+  props.setRefFunction(plotRef.value)
 })
 </script>
