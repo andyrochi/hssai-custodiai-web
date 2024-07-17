@@ -184,14 +184,14 @@ export const useMode2TextStore = defineStore('mode2-text', () => {
         columns: [
           [
             {
-              text: '對父親有利的因素選項',
+              text: '對父親有利的理由文字',
               style: 'factorTitle'
             },
             {
               text: allFactors['fatherFavorable']
             },
             {
-              text: '對父親不利的因素選項',
+              text: '對父親不利的理由文字',
               style: 'factorTitle'
             },
             {
@@ -201,14 +201,14 @@ export const useMode2TextStore = defineStore('mode2-text', () => {
           ],
           [
             {
-              text: '對母親有利的因素選項',
+              text: '對母親有利的理由文字',
               style: 'factorTitle'
             },
             {
               text: allFactors['motherFavorable']
             },
             {
-              text: '對母親不利的因素選項',
+              text: '對母親不利的理由文字',
               style: 'factorTitle'
             },
             {

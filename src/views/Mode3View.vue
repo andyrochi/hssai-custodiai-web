@@ -127,7 +127,7 @@ const factorTitleMapping = {
 const store = useMode3OptionsTextStore()
 const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
   storeToRefs(store)
-const { getPrediction } = store
+const { getPrediction, exportResult, setPlot1Ref, setPlot2Ref } = store
 
 const showModal = ref(false)
 const modalFactorType = ref<keyof Factors>('fatherFavorable')
@@ -167,7 +167,9 @@ const send = () => {
     :predict="send"
     :reset="store.$reset"
     :isLoading="isLoading"
+    :is-interpreting="isInterpreting"
     :showPredict="showPredict"
+    :exportResult="exportResult"
   >
     <template #instructions>
       <instructions></instructions>
@@ -262,8 +264,16 @@ const send = () => {
 
     <template #predict-result>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ViolinPlot :predict_result="predictResult" model_used="C1"></ViolinPlot>
-        <ViolinPlot :predict_result="predictResult" model_used="C2"></ViolinPlot>
+        <ViolinPlot
+          :predict_result="predictResult"
+          model_used="C1"
+          :set-ref-function="setPlot1Ref"
+        ></ViolinPlot>
+        <ViolinPlot
+          :predict_result="predictResult"
+          model_used="C2"
+          :set-ref-function="setPlot2Ref"
+        ></ViolinPlot>
       </div>
     </template>
     <template #interpreted-result>

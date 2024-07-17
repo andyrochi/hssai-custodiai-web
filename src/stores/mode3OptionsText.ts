@@ -3,6 +3,9 @@ import { defineStore } from 'pinia'
 import { predictMode } from '@/api/modules/predictApi'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
 import { interpretDataWithChat } from '@/api/modules/chatApi'
+import pdfMake from 'pdfmake'
+import VuePlotly from 'vue3-plotly-ts'
+import Plotly from 'plotly.js-dist-min'
 
 export interface factorObj {
   factor: string | undefined
@@ -38,6 +41,17 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     motherFavorable: [],
     motherUnfavorable: []
   })
+
+  const plot1Ref = ref<typeof VuePlotly>()
+  const plot2Ref = ref<typeof VuePlotly>()
+
+  // define ref in store, and pass function to ViolinPlot to set it accordingly
+  const setPlot1Ref = (ref: any) => {
+    plot1Ref.value = ref
+  }
+  const setPlot2Ref = (ref: any) => {
+    plot2Ref.value = ref
+  }
 
   const predictResult = reactive<PredictResponse>({
     C1: {
@@ -155,6 +169,166 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     }
   }
 
+  const exportResult = async () => {
+    const fonts = {
+      NotoSansTC: {
+        normal: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2',
+        bold: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2'
+      }
+    }
+
+    const styles = {
+      header: {
+        fontSize: 22,
+        bold: true
+      },
+      factorTitle: {
+        fontSize: 14,
+        bold: true
+      },
+      title: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 12, 0, 6] // margin: [left, top, right, bottom]
+      },
+      date: {
+        fontSize: 8
+      },
+      diagramDescription: {
+        fontSize: 8,
+        alignment: 'center'
+      }
+    }
+
+    const reduceFactorDescription = (curStr: string, curFactor: any, curIndex: number) => {
+      const i = curIndex + 1
+      const factor = curFactor.factor ? `[${curFactor.factor}]` : '無'
+      const description = curFactor.description
+      curStr += `因素與理由${i}：\n 選擇因素：${factor}\n 理由描述：${description}\n`
+      return curStr
+    }
+
+    const content: any[] = [
+      {
+        text: 'AI 輔助親權裁判預測系統 - 模式三：選項加文字輸入',
+        style: 'header'
+      },
+      {
+        text: `匯出日期：${new Date().toLocaleString('zh-TW')}`,
+        style: 'date'
+      },
+      {
+        text: '使用者輸入內容',
+        style: 'title'
+      },
+      {
+        alignment: 'justify',
+        columns: [
+          [
+            {
+              text: '對父親有利的因素與理由',
+              style: 'factorTitle'
+            },
+            {
+              text: allFactors['fatherFavorable'].reduce(reduceFactorDescription, '')
+            },
+            {
+              text: '對父親不利的因素與理由',
+              style: 'factorTitle'
+            },
+            {
+              text:
+                allFactors['fatherUnfavorable'].length > 0
+                  ? allFactors['fatherUnfavorable'].reduce(reduceFactorDescription, '')
+                  : '無'
+            }
+          ],
+          [
+            {
+              text: '對母親有利的因素與理由',
+              style: 'factorTitle'
+            },
+            {
+              text: allFactors['motherFavorable'].reduce(reduceFactorDescription, '')
+            },
+            {
+              text: '對母親不利的因素與理由',
+              style: 'factorTitle'
+            },
+            {
+              text:
+                allFactors['motherUnfavorable'].length > 0
+                  ? allFactors['motherUnfavorable'].reduce(reduceFactorDescription, '')
+                  : '無'
+            }
+          ]
+        ],
+        columnGap: 16
+      }
+    ]
+
+    // parse plot
+    const plot1RefGraphDivId = plot1Ref.value?.plotlyId
+    const plot2RefGraphDivId = plot2Ref.value?.plotlyId
+    const plot1Image = await Plotly.toImage(plot1RefGraphDivId, {
+      format: 'png',
+      height: 480,
+      width: 480
+    })
+    const plot2Image = await Plotly.toImage(plot2RefGraphDivId, {
+      format: 'png',
+      height: 480,
+      width: 480
+    })
+
+    content.push({
+      text: '預測結果',
+      style: 'title'
+    })
+    content.push(
+      {
+        alignment: 'justify',
+        columns: [
+          {
+            image: plot1Image,
+            width: 240
+          },
+          {
+            image: plot2Image,
+            width: 240
+          }
+        ],
+        columnGap: 16
+      },
+      {
+        text: '為了避免使用者過度解讀AI預測的結果，本系統以小提琴圖(Violin Plot)來呈現親權判決預測結果，展示多達100組AI預測結果的機率分布狀態。點數越密集的區域代表越有可能的機率值，小提琴圖也越寬，反之亦然。',
+        style: 'diagramDescription'
+      }
+    )
+
+    content.push({
+      text: '結果解讀',
+      style: 'title'
+    })
+    content.push({
+      text: interpretedResults.value
+    })
+
+    pdfMake
+      .createPdf(
+        {
+          content: content,
+          defaultStyle: {
+            font: 'NotoSansTC'
+          },
+          styles: styles
+        },
+        null,
+        fonts
+      )
+      .open()
+  }
+
   return {
     allFactors,
     addNewFactor,
@@ -164,6 +338,9 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     showPredict,
     isLoading,
     interpretedResults,
-    isInterpreting
+    isInterpreting,
+    exportResult,
+    setPlot1Ref,
+    setPlot2Ref
   }
 })
