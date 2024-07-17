@@ -157,8 +157,12 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
         bold: true,
         margin: [0, 12, 0, 6] // margin: [left, top, right, bottom]
       },
-      description: {
+      date: {
         fontSize: 8
+      },
+      diagramDescription: {
+        fontSize: 8,
+        alignment: 'center'
       }
     }
 
@@ -169,7 +173,11 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
       },
       {
         text: `匯出日期：${new Date().toLocaleString('zh-TW')}`,
-        style: 'description'
+        style: 'date'
+      },
+      {
+        text: '使用者輸入內容',
+        style: 'title'
       },
       {
         alignment: 'justify',
@@ -212,7 +220,8 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
                   : '無'
             }
           ]
-        ]
+        ],
+        columnGap: 16
       }
     ]
 
@@ -240,17 +249,18 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
         columns: [
           {
             image: plot1Image,
-            width: 220
+            width: 240
           },
           {
             image: plot2Image,
-            width: 220
+            width: 240
           }
-        ]
+        ],
+        columnGap: 16
       },
       {
         text: '為了避免使用者過度解讀AI預測的結果，本系統以小提琴圖(Violin Plot)來呈現親權判決預測結果，展示多達100組AI預測結果的機率分布狀態。點數越密集的區域代表越有可能的機率值，小提琴圖也越寬，反之亦然。',
-        style: 'description'
+        style: 'diagramDescription'
       }
     )
 

@@ -10,7 +10,7 @@ import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
 const store = useMode2TextStore()
 const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
   storeToRefs(store)
-const { getPrediction } = store
+const { getPrediction, exportResult, setPlot1Ref, setPlot2Ref } = store
 
 const dataTemplate = {
   advantage: [
@@ -235,6 +235,7 @@ const send = () => {
     :reset="store.$reset"
     :isLoading="isLoading"
     :showPredict="showPredict"
+    :exportResult="exportResult"
   >
     <template #instructions>
       <instructions></instructions>
@@ -287,8 +288,16 @@ const send = () => {
 
     <template #predict-result>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ViolinPlot :predict_result="predictResult" model_used="S1"></ViolinPlot>
-        <ViolinPlot :predict_result="predictResult" model_used="S2"></ViolinPlot>
+        <ViolinPlot
+          :predict_result="predictResult"
+          model_used="S1"
+          :set-ref-function="setPlot1Ref"
+        ></ViolinPlot>
+        <ViolinPlot
+          :predict_result="predictResult"
+          model_used="S2"
+          :set-ref-function="setPlot2Ref"
+        ></ViolinPlot>
       </div>
     </template>
 
