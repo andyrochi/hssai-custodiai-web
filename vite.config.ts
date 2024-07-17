@@ -9,10 +9,10 @@ import markdownItClass from 'markdown-it-class'
 export default defineConfig({
   plugins: [
     vue({
-      include: [/\.vue$/, /\.md$/], // <-- allows Vue to compile Markdown files
+      include: [/\.vue$/, /\.md$/] // <-- allows Vue to compile Markdown files
     }),
     Markdown({
-      // configure markdownIt plugins 
+      // configure markdownIt plugins
       // see https://github.com/unplugin/unplugin-vue-markdown?tab=readme-ov-file#options
       markdownItSetup(md) {
         md.use(markdownItClass, {
@@ -29,11 +29,10 @@ export default defineConfig({
           ol: ['list-decimal', 'mb-4'],
           table: ['table-auto', 'border-collapse', 'w-full', 'rounded-lg', 'border'],
           th: ['font-bold', 'text-slate-600', 'border-b', 'px-1.5', 'py-3', 'bg-slate-100'],
-          td: ['border', 'border-slate-200', 'px-1.5', 'py-3'],
-          
+          td: ['border', 'border-slate-200', 'px-1.5', 'py-3']
         })
       }
-    }),
+    })
   ],
   resolve: {
     alias: {
