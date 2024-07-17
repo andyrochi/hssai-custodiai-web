@@ -234,6 +234,7 @@ const send = () => {
     :predict="send"
     :reset="store.$reset"
     :isLoading="isLoading"
+    :is-interpreting="isInterpreting"
     :showPredict="showPredict"
     :exportResult="exportResult"
   >
