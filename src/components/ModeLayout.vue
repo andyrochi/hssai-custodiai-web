@@ -97,7 +97,7 @@ withDefaults(defineProps<Props>(), {
         開始預測
       </button>
       <button
-        class="text-xl bg-orange-100 px-4 py-2 rounded-lg text-orange-800 block hover:bg-orange-50"
+        class="text-xl bg-slate-100 px-4 py-2 rounded-lg text-slate-800 block hover:bg-slate-50"
         @click="
           () => {
             exportResult()
