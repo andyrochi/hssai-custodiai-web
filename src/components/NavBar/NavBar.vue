@@ -6,7 +6,7 @@ import NavLink from '@/components/NavBar/NavLink.vue'
 const navbarLinks = [
   {
     to: '/',
-    name: '首頁'
+    name: 'Le姊'
   },
   {
     to: '/news-info',
@@ -16,8 +16,8 @@ const navbarLinks = [
     to: '#',
     name: '模式選單',
     children: [
-      { to: '/mode1-options', name: '模式一：選項' },
-      { to: '/mode2-text', name: '模式二：文字' },
+      { to: '/mode1-options', name: '模式一：選項輸入' },
+      { to: '/mode2-text', name: '模式二：文字輸入' },
       { to: '/mode3-options-text', name: '模式三：選項加文字' }
     ]
   },
