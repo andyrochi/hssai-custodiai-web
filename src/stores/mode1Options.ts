@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 import { predictMode } from '@/api/modules/predictApi'
 import { interpretDataWithChat } from '@/api/modules/chatApi'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
-import pdfMake from 'pdfmake'
+import type { InputFactors, FiguresSrc } from '@/utils/pdfMake'
+import { createAndOpenPredictResultPdf } from '@/utils/pdfMake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
 
@@ -135,96 +136,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     }
   }
 
-  const exportResult = async () => {
-    const fonts = {
-      NotoSansTC: {
-        normal: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2',
-        bold: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2'
-      }
-    }
-
-    const styles = {
-      header: {
-        fontSize: 22,
-        bold: true
-      },
-      factorTitle: {
-        fontSize: 14,
-        bold: true
-      },
-      title: {
-        fontSize: 16,
-        bold: true,
-        margin: [0, 12, 0, 6] // margin: [left, top, right, bottom]
-      },
-      date: {
-        fontSize: 8
-      },
-      diagramDescription: {
-        fontSize: 8,
-        alignment: 'center'
-      }
-    }
-
-    const content: any[] = [
-      {
-        text: 'AI 輔助親權裁判預測系統 - 模式一：選項輸入',
-        style: 'header'
-      },
-      {
-        text: `匯出日期：${new Date().toLocaleString('zh-TW')}`,
-        style: 'date'
-      },
-      {
-        text: '使用者輸入內容',
-        style: 'title'
-      },
-      {
-        alignment: 'justify',
-        columns: [
-          [
-            {
-              text: '對父親有利的因素選項',
-              style: 'factorTitle'
-            },
-            {
-              text: allFactors['fatherFavorable'].join('、')
-            },
-            {
-              text: '對父親不利的因素選項',
-              style: 'factorTitle'
-            },
-            {
-              text:
-                allFactors['fatherUnfavorable'].length > 0
-                  ? allFactors['fatherUnfavorable'].join('、')
-                  : '無'
-            }
-          ],
-          [
-            {
-              text: '對母親有利的因素選項',
-              style: 'factorTitle'
-            },
-            {
-              text: allFactors['motherFavorable'].join('、')
-            },
-            {
-              text: '對母親不利的因素選項',
-              style: 'factorTitle'
-            },
-            {
-              text:
-                allFactors['motherUnfavorable'].length > 0
-                  ? allFactors['motherUnfavorable'].join('、')
-                  : '無'
-            }
-          ]
-        ],
-        columnGap: 16
-      }
-    ]
-
+  const getPlot = async () => {
     // parse plot
     const plot1RefGraphDivId = plot1Ref.value?.plotlyId
     const plot2RefGraphDivId = plot2Ref.value?.plotlyId
@@ -239,52 +151,34 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
       width: 480
     })
 
-    content.push({
-      text: '預測結果',
-      style: 'title'
-    })
-    content.push(
-      {
-        alignment: 'justify',
-        columns: [
-          {
-            image: plot1Image,
-            width: 240
-          },
-          {
-            image: plot2Image,
-            width: 240
-          }
-        ],
-        columnGap: 16
-      },
-      {
-        text: '為了避免使用者過度解讀AI預測的結果，本系統以小提琴圖(Violin Plot)來呈現親權判決預測結果，展示多達100組AI預測結果的機率分布狀態。點數越密集的區域代表越有可能的機率值，小提琴圖也越寬，反之亦然。',
-        style: 'diagramDescription'
-      }
-    )
+    return {
+      plot1Image,
+      plot2Image
+    }
+  }
 
-    content.push({
-      text: '結果解讀',
-      style: 'title'
-    })
-    content.push({
-      text: interpretedResults.value
-    })
+  const exportResult = async () => {
+    const pdfTitle = '模式一：選項輸入'
+    const inputFactors: InputFactors = {
+      fatherFavorable: allFactors['fatherFavorable'].join('、'),
+      fatherUnfavorable:
+        allFactors['fatherUnfavorable'].length > 0
+          ? allFactors['fatherUnfavorable'].join('、')
+          : '無',
+      motherFavorable: allFactors['motherFavorable'].join('、'),
+      motherUnfavorable:
+        allFactors['motherUnfavorable'].length > 0
+          ? allFactors['motherUnfavorable'].join('、')
+          : '無'
+    }
+    const { plot1Image, plot2Image } = await getPlot()
+    const figuresSrc: FiguresSrc = {
+      figure1Src: plot1Image,
+      figure2Src: plot2Image
+    }
+    const interpretedResultsStr: string = interpretedResults.value
 
-    pdfMake
-      .createPdf(
-        {
-          content: content,
-          defaultStyle: {
-            font: 'NotoSansTC'
-          },
-          styles: styles
-        },
-        null,
-        fonts
-      )
-      .open()
+    createAndOpenPredictResultPdf(pdfTitle, inputFactors, figuresSrc, interpretedResultsStr)
   }
 
   return {
