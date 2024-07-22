@@ -270,11 +270,11 @@ export const interpretDataWithChat = async (
       對父親有利的敘述：${inputSentence.AA}  
       對父親不利的敘述：${inputSentence.AD} 
       以下是多個來自兩種不同演算法所預測出來的判決結果機率分佈：
-      1. S1模型：
+      1. C1模型：
         *判給父親: [平均機率：${predictResult[modelUsed[mode][0]].Applicant.avg_prob}, 最小機率：${predictResult[modelUsed[mode][0]].Applicant.min}, 最大機率：${predictResult[modelUsed[mode][0]].Applicant.max}, Q1:${predictResult[modelUsed[mode][0]].Applicant.q1}, Q2:${predictResult[modelUsed[mode][0]].Applicant.q2}, Q3:${predictResult[modelUsed[mode][0]].Applicant.q3}, 標準差:${predictResult[modelUsed[mode][0]].Applicant.std}]
         *判給母親: [平均機率：${predictResult[modelUsed[mode][0]].Respondent.avg_prob}, 最小機率：${predictResult[modelUsed[mode][0]].Respondent.min}, 最大機率：${predictResult[modelUsed[mode][0]].Respondent.max}, Q1:${predictResult[modelUsed[mode][0]].Respondent.q1}, Q2:${predictResult[modelUsed[mode][0]].Respondent.q2}, Q3:${predictResult[modelUsed[mode][0]].Respondent.q3}, 標準差:${predictResult[modelUsed[mode][0]].Respondent.std}]
         *判給雙方: [平均機率：${predictResult[modelUsed[mode][0]].Both.avg_prob}, 最小機率：${predictResult[modelUsed[mode][0]].Both.min}, 最大機率：${predictResult[modelUsed[mode][0]].Both.max}, Q1:${predictResult[modelUsed[mode][0]].Both.q1}, Q2:${predictResult[modelUsed[mode][0]].Both.q2}, Q3:${predictResult[modelUsed[mode][0]].Both.q3}, 標準差:${predictResult[modelUsed[mode][0]].Both.std}]
-      2. S2
+      2. C2
         *判給父親: [平均機率：${predictResult[modelUsed[mode][1]].Applicant.avg_prob}, 最小機率：${predictResult[modelUsed[mode][1]].Applicant.min}, 最大機率：${predictResult[modelUsed[mode][1]].Applicant.max}, Q1:${predictResult[modelUsed[mode][1]].Applicant.q1}, Q2:${predictResult[modelUsed[mode][1]].Applicant.q2}, Q3:${predictResult[modelUsed[mode][1]].Applicant.q3}, 標準差:${predictResult[modelUsed[mode][1]].Applicant.std}]
         *判給母親: [平均機率：${predictResult[modelUsed[mode][1]].Respondent.avg_prob}, 最小機率：${predictResult[modelUsed[mode][1]].Respondent.min}, 最大機率：${predictResult[modelUsed[mode][1]].Respondent.max}, Q1:${predictResult[modelUsed[mode][1]].Respondent.q1}, Q2:${predictResult[modelUsed[mode][1]].Respondent.q2}, Q3:${predictResult[modelUsed[mode][1]].Respondent.q3}, 標準差:${predictResult[modelUsed[mode][1]].Respondent.std}]
         *判給雙方: [平均機率：${predictResult[modelUsed[mode][1]].Both.avg_prob}, 最小機率：${predictResult[modelUsed[mode][1]].Both.min}, 最大機率：${predictResult[modelUsed[mode][1]].Both.max}, Q1:${predictResult[modelUsed[mode][1]].Both.q1}, Q2:${predictResult[modelUsed[mode][1]].Both.q2}, Q3:${predictResult[modelUsed[mode][1]].Both.q3}, 標準差:${predictResult[modelUsed[mode][1]].Both.std}]
