@@ -6,7 +6,7 @@ import NavLink from '@/components/NavBar/NavLink.vue'
 const navbarLinks = [
   {
     to: '/',
-    name: 'Le姊'
+    name: 'Le姐'
   },
   {
     to: '/news-info',

@@ -41,7 +41,7 @@ const onSubmit = () => {
     >
       <div>
         <!-- text content -->
-        <span class="font-bold">Le 姊家事協商好夥伴</span>
+        <span class="font-bold">Le 姐家事協商好夥伴</span>
         <div class="text-gray-400 text-xs">
           請使用者以家事調解員的身分來使用，儘量公允地提供父母雙方相關資訊
         </div>
@@ -100,7 +100,7 @@ const onSubmit = () => {
             rows="1"
             ref="textarea"
             class="block m-0 resize-none w-full text-gray-900 bg-transparent max-h-[25dvh] max-h-52 border:none outline-none"
-            placeholder="詢問Le姊..."
+            placeholder="詢問Le姐..."
             @input="adjustTextarea"
             @keypress.enter.exact.prevent="onSubmit"
             v-model="inputMessage"

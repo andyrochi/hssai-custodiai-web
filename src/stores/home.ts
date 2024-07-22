@@ -47,7 +47,7 @@ export const useChatStore = defineStore('home', () => {
       role: 'assistant',
       status: 'initial',
       content:
-        '調解委員您好！我是Le姊，一個專門設計來協助處理家事調解相關問題的對話機器人。我可以使用適當的法律用語以及親權相關的法律概念，協助您逐步釐清當事人的情況，並提供親權判決結果預測與專業建議以及推薦適合當事人的的友善資源，以協助您促進雙方達成共識。當然，若在對話過程中，您的問題已超出我程式設計所涵蓋的範圍，我也會建議您直接尋求專業的法律諮詢。現在，你準備好開始對話了嗎？'
+        '調解委員您好！我是Le姐，一個專門設計來協助處理家事調解相關問題的對話機器人。我可以使用適當的法律用語以及親權相關的法律概念，協助您逐步釐清當事人的情況，並提供親權判決結果預測與專業建議以及推薦適合當事人的的友善資源，以協助您促進雙方達成共識。當然，若在對話過程中，您的問題已超出我程式設計所涵蓋的範圍，我也會建議您直接尋求專業的法律諮詢。現在，你準備好開始對話了嗎？'
     }
   ])
   const summaryText = ref<string>('')
@@ -387,7 +387,7 @@ export const useChatStore = defineStore('home', () => {
 
     const content: any[] = [
       {
-        text: 'Le 姊家事協商好夥伴',
+        text: 'Le 姐家事協商好夥伴',
         style: 'header'
       },
       {
@@ -409,7 +409,7 @@ export const useChatStore = defineStore('home', () => {
       if (curMessage.role !== 'system') {
         if (curMessage.role === 'assistant') {
           prevArr.push({
-            text: 'Le姊:',
+            text: 'Le姐:',
             style: 'user'
           })
         }
@@ -448,7 +448,7 @@ export const useChatStore = defineStore('home', () => {
     })
 
     content.push({
-      text: 'Le姊:',
+      text: 'Le姐:',
       style: 'user'
     })
     content.push({
