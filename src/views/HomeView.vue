@@ -2,13 +2,26 @@
 import intro from '@/content/Home/intro.md'
 import hint from '@/content/Home/hint.md'
 import ChatbotPanel from '@/components/Chatbot/ChatbotPanel.vue'
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import Checkbox from 'primevue/checkbox'
 
+const dontShowIntroCheckbox = ref<Boolean>(false)
 const showIntro = ref<Boolean>(true)
 
 const toggleIntro = () => {
   showIntro.value = !showIntro.value
 }
+
+onMounted(() => {
+  if (localStorage.dontShowIntro) {
+    dontShowIntroCheckbox.value = localStorage.dontShowIntro === 'true'
+    showIntro.value = !dontShowIntroCheckbox.value
+  }
+})
+
+watch(dontShowIntroCheckbox, (newVal) => {
+  localStorage.dontShowIntro = newVal
+})
 </script>
 
 <template>
@@ -25,6 +38,10 @@ const toggleIntro = () => {
         <hint></hint>
       </div>
       <div class="w-full">
+        <div class="text-base text-slate-700 mt-6 text-center">
+          <Checkbox v-model="dontShowIntroCheckbox" binary></Checkbox>
+          以後不再顯示系統說明
+        </div>
         <button
           @click="toggleIntro"
           class="mt-4 bg-orange-100 px-4 py-2 rounded-lg text-orange-800 block mx-auto hover:bg-orange-50"
