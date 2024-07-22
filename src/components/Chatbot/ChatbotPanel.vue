@@ -5,7 +5,8 @@ import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/home'
 
 const store = useChatStore()
-const { inputMessage, messageHistory, isLoading, currentStatus, predictResult } = storeToRefs(store)
+const { inputMessage, messageHistory, isLoading, currentStatus, predictResult, isResultPredicted } =
+  storeToRefs(store)
 const { sendMessage, handleStartPredict, exportResult } = store
 
 const textarea = ref<HTMLTextAreaElement | null>(null)
@@ -88,6 +89,17 @@ const onSubmit = () => {
               type="button"
             >
               開始預測判決結果！
+            </button>
+          </div>
+
+          <div v-if="isResultPredicted">
+            <span class="text-slate-600 text-sm">已預測判決結果，</span>
+            <button
+              class="border border-slate-200 rounded-xl px-2 py-2 bg-white shadow hover:bg-slate-50"
+              @click="exportResult"
+              type="button"
+            >
+              下載對話紀錄
             </button>
           </div>
         </div>

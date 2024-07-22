@@ -36,6 +36,7 @@ export const useChatStore = defineStore('home', () => {
   const isLoading = ref<boolean>(false)
   const inputMessage = ref<string | null>('')
   const currentStage = ref<Stage>('collect-info')
+  const isResultPredicted = ref<boolean>(false)
   const messageHistory = reactive<Message[]>([
     {
       role: 'system',
@@ -102,6 +103,12 @@ export const useChatStore = defineStore('home', () => {
           ''
         )
         summaryText.value = messageHistory[histLength - 1].content
+      }
+      const isPredicted =
+        messageHistory[histLength - 1].status === 'predict' &&
+        messageHistory[histLength - 1].role === 'assistant'
+      if (isPredicted) {
+        isResultPredicted.value = true
       }
     }
   })
@@ -497,6 +504,7 @@ export const useChatStore = defineStore('home', () => {
     handleStartPredict,
     exportResult,
     setPlot1Ref,
-    setPlot2Ref
+    setPlot2Ref,
+    isResultPredicted
   }
 })
