@@ -310,7 +310,7 @@ const send = () => {
                 @click="setFactorAndDescription(factorKey, descriptions)"
                 class="text-nowrap bg-orange-100 text-orange-800 rounded px-2 py-1 hover:bg-orange-50 focus:outline-none focus:ring-orange-50 focus:ring-4 active:bg-orange-200 disabled:bg-slate-50 disabled:text-slate-500"
               >
-                使用文字
+                匯入
               </button>
             </div>
           </div>
