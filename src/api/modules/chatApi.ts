@@ -40,7 +40,7 @@ export const interpretDataWithChat = async (
 ) => {
   // Prepare prompt
   const defaultChatRequest: ChatRequest = {
-    model: 'gpt-4o',
+    model: 'gpt-4-turbo',
     messages: [],
     stage: 'collect-info'
   }
