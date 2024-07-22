@@ -81,7 +81,7 @@ const onSubmit = () => {
           </button>
 
           <div v-if="currentStatus === 'summary'">
-            <span class="text-slate-600 text-sm">如果不需修改，請點擊按鈕：</span>
+            <span class="text-slate-600 text-sm">如不需修改，請點擊：</span>
             <button
               class="border border-slate-200 rounded-xl px-2 py-2 bg-white shadow hover:bg-slate-50"
               @click="handleStartPredict"
