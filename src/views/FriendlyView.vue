@@ -47,12 +47,11 @@ const toggleCity = (cityName: string) => {
       使用說明：本網頁蒐集國內各縣市中，親權裁判當事人所可能會需要使用或參考的社會服務資源。請先從左方地圖上點選所要查詢的縣市，右方即會呈現該縣市目前相關資源之網頁連結。使用者可以直接點入即連結到該機構的網頁，進一步查詢相關資訊。
     </div>
     <div class="md:flex md:gap-6">
-      <div class="flex flex-row md:basis-1/2">
-        <TaiwanMap class="grow" :cities="cities"></TaiwanMap>
-        <div class="grid grid-cols-2">
+      <div class="md:basis-1/2">
+        <div class="grid grid-cols-5">
           <button
-            class="text-xs px-2 py-1 bg-orange-100 rounded-xl md:px-4 md:py-2 m-1 md:text-sm text-orange-800 block"
-            :class="city.status ? 'text-orange-100 bg-orange-800' : ''"
+            class="text-xs px-2 py-1 rounded-xl md:px-4 md:py-2 m-1 md:text-sm block"
+            :class="city.status ? 'text-white bg-orange-800' : 'bg-orange-100 text-orange-800'"
             v-for="(city, index) in cities"
             :key="index"
             @click="toggleCity(city.name)"
@@ -60,6 +59,7 @@ const toggleCity = (cityName: string) => {
             {{ city.name }}
           </button>
         </div>
+        <TaiwanMap class="grow" :cities="cities"></TaiwanMap>
       </div>
       <div class="mt-6 md:mt-0 md:basis-1/2">
         <div>

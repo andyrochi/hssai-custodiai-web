@@ -37,28 +37,18 @@ const updateMap = async () => {
 }
 
 const getTaiwanMap = async () => {
-  // fix reactive
-  // const width = map.value?.offsetWidth ?? 0
-  // const height = map.value?.offsetHeight ?? 0
-
-  const width = 200
-  const height = 400
+  const width = 420
+  const height = 420
   const ratio = height / width
 
-  let mercatorScale = window.screen.width
-  const w = window.screen.width
-  if (w > 360) {
-    mercatorScale = 6000
-  } else if (w <= 360) {
-    mercatorScale = 4000
-  }
+  const mercatorScale = 4600
 
   const path = d3.geoPath().projection(
     d3
       .geoMercator()
-      .center([121, 24])
+      .center([120, 24.1])
       .scale(mercatorScale)
-      .translate([width / 2, height / 2.5])
+      .translate([width / 2, height / 2])
   )
 
   const svg = await d3
@@ -80,7 +70,7 @@ const getTaiwanMap = async () => {
     .enter()
     .append('path')
     .attr('d', path)
-    .attr('id', (d: any) => 'city' + d.properties.COUNTYCODE)
+    .attr('id', (d: any) => 'city' + d.properties.COUNTYSN)
     .attr('name', (d: any) => d.properties.COUNTYNAME)
     .classed('active', (d: any) => {
       return props.cities
