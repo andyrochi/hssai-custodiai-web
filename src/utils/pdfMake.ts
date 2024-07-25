@@ -27,6 +27,18 @@ const pdfStyles = {
   diagramDescription: {
     fontSize: 8,
     alignment: 'center'
+  },
+  description: {
+    fontSize: 12
+  },
+  normal: {
+    margin: [0, 0, 0, 0],
+    fontSize: 12
+  },
+  user: {
+    margin: [0, 12, 0, 0],
+    fontSize: 14,
+    bold: true
   }
 }
 

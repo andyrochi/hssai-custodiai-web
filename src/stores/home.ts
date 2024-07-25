@@ -388,7 +388,14 @@ export const useChatStore = defineStore('home', () => {
       user: {
         margin: [0, 12, 0, 0],
         fontSize: 14,
-        bold: true
+        bold: true,
+        color: '#f59e0b'
+      },
+      leAssistant: {
+        margin: [0, 12, 0, 0],
+        fontSize: 14,
+        bold: true,
+        color: '#7c2d12'
       }
     }
 
@@ -417,7 +424,7 @@ export const useChatStore = defineStore('home', () => {
         if (curMessage.role === 'assistant') {
           prevArr.push({
             text: 'Le姐:',
-            style: 'user'
+            style: 'leAssistant'
           })
         }
         if (curMessage.role === 'user') {
@@ -456,7 +463,7 @@ export const useChatStore = defineStore('home', () => {
 
     content.push({
       text: 'Le姐:',
-      style: 'user'
+      style: 'leAssistant'
     })
     content.push({
       alignment: 'justify',
