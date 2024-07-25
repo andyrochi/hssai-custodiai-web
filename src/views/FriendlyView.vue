@@ -1,17 +1,37 @@
 <script setup lang="ts">
 import BasicLayout from '@/components/BasicLayout.vue'
 import TaiwanMap from '@/components/charts/TaiwanMap.vue'
-import resources from '@/assets/resource-by-city.json'
-import { reactive } from 'vue'
+import resourcesJson from '@/assets/resource-by-city.json'
+import { reactive, ref, watch } from 'vue'
 
 interface City {
   name: string
   status: boolean
 }
 
+interface ResourceItem {
+  name: string
+  link: string
+}
+
+type ResourceCategory = ResourceItem[]
+
+interface CityResources {
+  [resourceCategory: string]: ResourceCategory
+}
+
+interface CitySource {
+  [cityName: string]: CityResources
+}
+
+const resources: CitySource = resourcesJson
+
 const cities = reactive<City[]>(
   Object.keys(resources).map((city) => ({ name: city, status: false }))
 )
+
+const isUnion = ref<boolean>(false)
+const isIntersection = ref<boolean>(false)
 const selectedResources = reactive({
   政府部門: [],
   法律議題: [],
@@ -24,13 +44,15 @@ const selectedResources = reactive({
 })
 
 const toggleCity = (cityName: string) => {
+  isUnion.value = false
+  isIntersection.value = false
   cities.forEach((city, index, cities) => {
     cities[index].status = false
     if (city.name === cityName) cities[index].status = true
   })
 
   // TODO: fix typescript issue later
-  const cityResources = resources[cityName] || {}
+  const cityResources: CityResources = resources[cityName] || {}
   Object.keys(selectedResources).forEach((category) => {
     selectedResources[category] = []
     if (cityResources[category]) {
@@ -38,21 +60,91 @@ const toggleCity = (cityName: string) => {
     }
   })
 }
+
+watch(isUnion, (newValue, oldValue) => {
+  // clear city and intersection status
+  if (newValue === true) {
+    isIntersection.value = false
+    cities.forEach((city, index, cities) => {
+      cities[index].status = false
+    })
+    Object.keys(selectedResources).forEach((category) => {
+      const map = new Map()
+
+      Object.keys(resources).forEach((city) => {
+        if (resources[city][category]) {
+          resources[city][category].forEach((resource) => {
+            map.set(resource.name, resource)
+          })
+        }
+      })
+      selectedResources[category] = Array.from(map.values())
+    })
+  }
+})
+
+watch(isIntersection, (newValue, oldValue) => {
+  // clear city and intersection status
+  if (newValue === true) {
+    isUnion.value = false
+    cities.forEach((city, index, cities) => {
+      cities[index].status = false
+    })
+
+    // Iterate over each category
+    Object.keys(selectedResources).forEach((category) => {
+      const cityKeys = Object.keys(resources)
+      if (cityKeys.length === 0) return
+
+      // Start with the resources from the first city
+      let intersection = resources[cityKeys[0]][category] || []
+
+      // Intersect with resources from each subsequent city
+      for (let i = 1; i < cityKeys.length; i++) {
+        const cityResources = resources[cityKeys[i]][category] || []
+        intersection = intersection.filter((resource) =>
+          cityResources.some((otherResource) => otherResource.name === resource.name)
+        )
+      }
+
+      selectedResources[category] = intersection
+    })
+  }
+})
 </script>
 
 <template>
   <BasicLayout>
     <h1 class="text-4xl font-bold mb-2">友善資源</h1>
     <div class="mb-8 flex mt-6 pt-3 pb-3 px-4 rounded-xl bg-slate-100">
-      使用說明：本網頁蒐集國內各縣市中，親權裁判當事人所可能會需要使用或參考的社會服務資源。請先從左方地圖上點選所要查詢的縣市，右方即會呈現該縣市目前相關資源之網頁連結。使用者可以直接點入即連結到該機構的網頁，進一步查詢相關資訊。
+      本網頁蒐集國內各縣市中，親權裁判當事人所可能會需要使用或參考的社會服務資源。請先從地圖上點選所要查詢的縣市，右方即會呈現該縣市目前相關資源之網頁連結。使用者可以直接點入即連結到該機構的網頁，進一步查詢相關資訊。
     </div>
     <div class="md:flex md:gap-6">
       <div class="md:basis-1/2">
+        <div class="flex justify-center">
+          <button
+            class="text-xs px-2 py-1 rounded-xl md:px-4 md:py-2 m-1 md:text-sm block"
+            :class="isUnion ? 'bg-blue-900 text-blue-50' : 'bg-blue-50 text-blue-900'"
+            @click="isUnion = true"
+          >
+            全部區域資源
+          </button>
+
+          <button
+            class="text-xs px-2 py-1 rounded-xl md:px-4 md:py-2 m-1 md:text-sm block"
+            :class="isIntersection ? 'bg-blue-900 text-blue-50' : 'bg-blue-50 text-blue-900'"
+            @click="isIntersection = true"
+          >
+            共同資源
+          </button>
+        </div>
         <div class="grid grid-cols-5">
           <button
             class="text-xs px-2 py-1 rounded-xl md:px-4 md:py-2 m-1 md:text-sm block"
             :class="city.status ? 'text-white bg-orange-800' : 'bg-orange-100 text-orange-800'"
-            v-for="(city, index) in cities"
+            v-for="(city, index) in cities.filter(
+              (city) => !(city.name === 'intersection' || city.name === 'union')
+            )"
             :key="index"
             @click="toggleCity(city.name)"
           >
