@@ -6,10 +6,19 @@ import { useMode1OptionsStore } from '@/stores/mode1Options'
 import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
+import InlineMessage from 'primevue/inlinemessage'
 
 const store = useMode1OptionsStore()
-const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
-  storeToRefs(store)
+const {
+  allFactors,
+  predictResult,
+  showPredict,
+  isLoading,
+  interpretedResults,
+  isInterpreting,
+  fatherInvalid,
+  motherInvalid
+} = storeToRefs(store)
 const { getPrediction, exportResult, setPlot1Ref, setPlot2Ref } = store
 
 const factorsSource = [
@@ -102,8 +111,12 @@ const send = () => {
           optionValue="value"
           optionDesc="desc"
           placeholder="請選擇因素"
+          :invalid="fatherInvalid"
         >
         </CustodyMultiSelect>
+        <InlineMessage severity="error" v-if="fatherInvalid" class="mt-2 w-full"
+          >有利因素選項不得為空！</InlineMessage
+        >
       </div>
     </template>
 
@@ -130,8 +143,12 @@ const send = () => {
           optionValue="value"
           optionDesc="desc"
           placeholder="請選擇因素"
+          :invalid="motherInvalid"
         >
         </CustodyMultiSelect>
+        <InlineMessage severity="error" v-if="motherInvalid" class="mt-2 w-full"
+          >有利因素選項不得為空！</InlineMessage
+        >
       </div>
     </template>
 

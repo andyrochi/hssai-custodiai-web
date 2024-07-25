@@ -9,6 +9,7 @@ defineProps<{
   optionLabel: string | undefined
   optionValue: string
   optionDesc: string | null
+  invalid?: boolean | undefined
 }>()
 </script>
 
@@ -16,6 +17,7 @@ defineProps<{
   <MultiSelect
     v-model="model"
     display="chip"
+    :invalid="invalid"
     :options="options"
     :optionLabel="optionLabel"
     :optionValue="optionValue"

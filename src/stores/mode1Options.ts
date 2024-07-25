@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { predictMode } from '@/api/modules/predictApi'
 import { interpretDataWithChat } from '@/api/modules/chatApi'
@@ -30,7 +30,9 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     motherFavorable: [],
     motherUnfavorable: []
   })
-
+  const isValidate = ref<boolean>(false)
+  const fatherInvalid = computed(() => isValidate.value && !allFactors['fatherFavorable'].length)
+  const motherInvalid = computed(() => isValidate.value && !allFactors['motherFavorable'].length)
   const plot1Ref = ref<typeof VuePlotly>()
   const plot2Ref = ref<typeof VuePlotly>()
 
@@ -62,34 +64,32 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     allFactors.motherUnfavorable = []
     showPredict.value = false
     interpretedResults.value = ''
+    isValidate.value = false
   }
 
   const getPrediction = async () => {
+    isValidate.value = true
+    if (fatherInvalid.value || motherInvalid.value) return
     isLoading.value = true
     showPredict.value = false
     interpretedResults.value = ''
     isInterpreting.value = true
-
     const readStream = async (reader: ReadableStreamDefaultReader<Uint8Array>, status: number) => {
       const partialLine = ''
       const decoder = new TextDecoder('utf-8')
       let notComplete = true
       while (notComplete) {
         const { value, done } = await reader.read()
-
         if (done) {
           notComplete = false
           continue
         }
-
         const decodedText = decoder.decode(value, { stream: true })
         // const decodedText = this.convertToTraditional(decoder.decode(value, { stream: true }));
-
         if (status !== 200) {
           interpretedResults.value += decodedText
           return
         }
-
         const chunk = partialLine + decodedText
         interpretedResults.value += chunk
       }
@@ -192,6 +192,8 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     isInterpreting,
     exportResult,
     setPlot1Ref,
-    setPlot2Ref
+    setPlot2Ref,
+    fatherInvalid,
+    motherInvalid
   }
 })
