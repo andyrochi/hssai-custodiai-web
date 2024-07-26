@@ -7,6 +7,7 @@ import type { PredictRequest, PredictResponse } from '@/models/predictModels'
 import pdfMake from 'pdfmake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
+import { createAndOpenChatHistoryPdf, type FiguresSrc } from '@/utils/pdfMake'
 
 const defaultChatRequest: ChatRequest = {
   model: 'gpt-4o',
@@ -365,88 +366,7 @@ export const useChatStore = defineStore('home', () => {
     messageHistory[lastIndex].content += text
   }
 
-  const exportResult = async () => {
-    const fonts = {
-      NotoSansTC: {
-        normal: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2',
-        bold: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2'
-      }
-    }
-
-    const styles = {
-      header: {
-        fontSize: 22,
-        bold: true
-      },
-      description: {
-        fontSize: 12
-      },
-      normal: {
-        margin: [0, 0, 0, 0],
-        fontSize: 12
-      },
-      user: {
-        margin: [0, 12, 0, 0],
-        fontSize: 14,
-        bold: true,
-        color: '#f59e0b'
-      },
-      leAssistant: {
-        margin: [0, 12, 0, 0],
-        fontSize: 14,
-        bold: true,
-        color: '#7c2d12'
-      }
-    }
-
-    const content: any[] = [
-      {
-        text: 'Le 姐家事協商好夥伴',
-        style: 'header'
-      },
-      {
-        text: `匯出日期：${new Date().toLocaleString('zh-TW')}`,
-        style: 'description'
-      }
-    ]
-
-    // parse message history
-    interface pdfContent {
-      text: string
-      style: string
-    }
-
-    const predictIndex = messageHistory.findIndex(
-      (curMessage: Message) => curMessage.status === 'predict'
-    )
-    const reduceMessagesToPdf = (prevArr: pdfContent[], curMessage: Message) => {
-      if (curMessage.role !== 'system') {
-        if (curMessage.role === 'assistant') {
-          prevArr.push({
-            text: 'Le姐:',
-            style: 'leAssistant'
-          })
-        }
-        if (curMessage.role === 'user') {
-          prevArr.push({
-            text: '你:',
-            style: 'user'
-          })
-        }
-        prevArr.push({
-          text: curMessage.content,
-          style: 'normal'
-        })
-      }
-      return prevArr
-    }
-    // parse until prediction
-    const parsedMessage = messageHistory
-      .slice(0, predictIndex)
-      .reduce<pdfContent[]>(reduceMessagesToPdf, [])
-
-    content.push(...parsedMessage)
-
+  const getPlot = async () => {
     // parse plot
     const plot1RefGraphDivId = plot1Ref.value?.plotlyId
     const plot2RefGraphDivId = plot2Ref.value?.plotlyId
@@ -461,44 +381,19 @@ export const useChatStore = defineStore('home', () => {
       width: 480
     })
 
-    content.push({
-      text: 'Le姐:',
-      style: 'leAssistant'
-    })
-    content.push({
-      alignment: 'justify',
-      columns: [
-        {
-          image: plot1Image,
-          width: 220
-        },
-        {
-          image: plot2Image,
-          width: 220
-        }
-      ]
-    })
+    return {
+      plot1Image,
+      plot2Image
+    }
+  }
 
-    // put predictionResults
-    const predictMessages = messageHistory
-      .slice(predictIndex)
-      .reduce<pdfContent[]>(reduceMessagesToPdf, [])
-
-    content.push(...predictMessages)
-
-    pdfMake
-      .createPdf(
-        {
-          content: content,
-          defaultStyle: {
-            font: 'NotoSansTC'
-          },
-          styles: styles
-        },
-        null,
-        fonts
-      )
-      .open()
+  const exportResult = async () => {
+    const { plot1Image, plot2Image } = await getPlot()
+    const figuresSrc: FiguresSrc = {
+      figure1Src: plot1Image,
+      figure2Src: plot2Image
+    }
+    createAndOpenChatHistoryPdf(messageHistory, figuresSrc)
   }
 
   return {

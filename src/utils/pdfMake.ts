@@ -1,4 +1,5 @@
 import pdfMake from 'pdfmake'
+import type { Message } from '@/models/chatModels'
 
 const pdfFonts = {
   NotoSansTC: {
@@ -38,7 +39,14 @@ const pdfStyles = {
   user: {
     margin: [0, 12, 0, 0],
     fontSize: 14,
-    bold: true
+    bold: true,
+    color: '#f59e0b'
+  },
+  leAssistant: {
+    margin: [0, 12, 0, 0],
+    fontSize: 14,
+    bold: true,
+    color: '#7c2d12'
   }
 }
 
@@ -139,6 +147,98 @@ export const createAndOpenPredictResultPdf = (
     },
     { text: interpretedResults }
   ]
+
+  pdfMake
+    .createPdf(
+      {
+        content: content,
+        defaultStyle: {
+          font: 'NotoSansTC'
+        },
+        styles: pdfStyles
+      },
+      null,
+      pdfFonts
+    )
+    .open()
+}
+
+export const createAndOpenChatHistoryPdf = (messageHistory: Message[], figuresSrc: FiguresSrc) => {
+  // utilities
+  interface pdfContent {
+    text: string
+    style: string
+  }
+
+  const predictIndex = messageHistory.findIndex(
+    (curMessage: Message) => curMessage.status === 'predict'
+  )
+  const reduceMessagesToPdf = (prevArr: pdfContent[], curMessage: Message) => {
+    if (curMessage.role !== 'system') {
+      if (curMessage.role === 'assistant') {
+        prevArr.push({
+          text: 'Le姐:',
+          style: 'leAssistant'
+        })
+      }
+      if (curMessage.role === 'user') {
+        prevArr.push({
+          text: '你:',
+          style: 'user'
+        })
+      }
+      prevArr.push({
+        text: curMessage.content,
+        style: 'normal'
+      })
+    }
+    return prevArr
+  }
+
+  const content: any[] = [
+    {
+      text: 'Le 姐家事協商好夥伴',
+      style: 'header'
+    },
+    {
+      text: `匯出日期：${new Date().toLocaleString('zh-TW')}`,
+      style: 'description'
+    }
+  ]
+
+  // parse until prediction
+  const parsedMessage = messageHistory
+    .slice(0, predictIndex)
+    .reduce<pdfContent[]>(reduceMessagesToPdf, [])
+
+  content.push(...parsedMessage)
+
+  // push prediction images
+  content.push({
+    text: 'Le姐:',
+    style: 'leAssistant'
+  })
+  content.push({
+    alignment: 'justify',
+    columns: [
+      {
+        image: figuresSrc.figure1Src,
+        width: 240
+      },
+      {
+        image: figuresSrc.figure2Src,
+        width: 240
+      }
+    ],
+    columnGap: 16
+  })
+
+  // push prediction results
+  const predictMessages = messageHistory
+    .slice(predictIndex)
+    .reduce<pdfContent[]>(reduceMessagesToPdf, [])
+
+  content.push(...predictMessages)
 
   pdfMake
     .createPdf(
