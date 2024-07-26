@@ -388,10 +388,14 @@ export const useChatStore = defineStore('home', () => {
   }
 
   const exportResult = async () => {
-    const { plot1Image, plot2Image } = await getPlot()
-    const figuresSrc: FiguresSrc = {
-      figure1Src: plot1Image,
-      figure2Src: plot2Image
+    let figuresSrc: FiguresSrc | undefined = undefined
+    // only parse output if predicted result
+    if (isResultPredicted.value) {
+      const { plot1Image, plot2Image } = await getPlot()
+      figuresSrc = {
+        figure1Src: plot1Image,
+        figure2Src: plot2Image
+      }
     }
     createAndOpenChatHistoryPdf(messageHistory, figuresSrc)
   }

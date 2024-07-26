@@ -163,7 +163,10 @@ export const createAndOpenPredictResultPdf = (
     .open()
 }
 
-export const createAndOpenChatHistoryPdf = (messageHistory: Message[], figuresSrc: FiguresSrc) => {
+export const createAndOpenChatHistoryPdf = (
+  messageHistory: Message[],
+  figuresSrc: FiguresSrc | undefined
+) => {
   // utilities
   interface pdfContent {
     text: string
@@ -213,25 +216,27 @@ export const createAndOpenChatHistoryPdf = (messageHistory: Message[], figuresSr
 
   content.push(...parsedMessage)
 
-  // push prediction images
-  content.push({
-    text: 'Le姐:',
-    style: 'leAssistant'
-  })
-  content.push({
-    alignment: 'justify',
-    columns: [
-      {
-        image: figuresSrc.figure1Src,
-        width: 240
-      },
-      {
-        image: figuresSrc.figure2Src,
-        width: 240
-      }
-    ],
-    columnGap: 16
-  })
+  if (figuresSrc) {
+    // push prediction images
+    content.push({
+      text: 'Le姐:',
+      style: 'leAssistant'
+    })
+    content.push({
+      alignment: 'justify',
+      columns: [
+        {
+          image: figuresSrc.figure1Src,
+          width: 240
+        },
+        {
+          image: figuresSrc.figure2Src,
+          width: 240
+        }
+      ],
+      columnGap: 16
+    })
+  }
 
   // push prediction results
   const predictMessages = messageHistory
