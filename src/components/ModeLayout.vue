@@ -93,6 +93,7 @@ withDefaults(defineProps<Props>(), {
             predict()
           }
         "
+        :disabled="isLoading || isInterpreting"
       >
         開始預測
       </button>
