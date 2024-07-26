@@ -18,6 +18,7 @@ interface DescriptionType {
 defineProps<{
   dialogTitle: string
   descriptionList: DescriptionType[]
+  invalid?: boolean | undefined
 }>()
 </script>
 <template>
@@ -41,6 +42,7 @@ defineProps<{
       rows="4"
       class="resize-none w-full"
       placeholder="可直接輸入描述，或由範例文字開始編輯..."
+      :invalid="invalid"
     ></Textarea>
     <Dialog
       v-model:visible="showModel"

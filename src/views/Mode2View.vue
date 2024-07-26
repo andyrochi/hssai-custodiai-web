@@ -6,10 +6,19 @@ import { useMode2TextStore } from '@/stores/mode2Text'
 import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
+import InlineMessage from 'primevue/inlinemessage'
 
 const store = useMode2TextStore()
-const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
-  storeToRefs(store)
+const {
+  allFactors,
+  predictResult,
+  showPredict,
+  isLoading,
+  interpretedResults,
+  isInterpreting,
+  fatherInvalid,
+  motherInvalid
+} = storeToRefs(store)
 const { getPrediction, exportResult, setPlot1Ref, setPlot2Ref } = store
 
 const dataTemplate = {
@@ -247,8 +256,12 @@ const send = () => {
         dialogTitle="對父親有利的理由文字"
         :descriptionList="dataTemplate['advantage']"
         class="mt-2"
+        :invalid="fatherInvalid"
       >
       </TextInputComponent>
+      <InlineMessage severity="error" v-if="fatherInvalid" class="mt-2 w-full"
+        >有利理由文字不得為空！</InlineMessage
+      >
     </template>
     <template #fatherUnfavorable>
       <TextInputComponent
@@ -265,8 +278,12 @@ const send = () => {
         dialogTitle="對母親有利的理由文字"
         :descriptionList="dataTemplate['advantage']"
         class="mt-2"
+        :invalid="motherInvalid"
       >
       </TextInputComponent>
+      <InlineMessage severity="error" v-if="motherInvalid" class="mt-2 w-full"
+        >有利理由文字不得為空！</InlineMessage
+      >
     </template>
     <template #motherUnfavorable>
       <TextInputComponent
