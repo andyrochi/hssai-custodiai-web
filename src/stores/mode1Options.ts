@@ -7,6 +7,7 @@ import type { InputFactors, FiguresSrc } from '@/utils/pdfMake'
 import { createAndOpenPredictResultPdf } from '@/utils/pdfMake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
+import { useToast } from 'primevue/usetoast'
 
 const defaultProbabilityStats = {
   all_probs: [],
@@ -31,10 +32,12 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     motherUnfavorable: []
   })
   const isValidate = ref<boolean>(false)
+  const isPredictInterpretComplete = ref<boolean>(false)
   const fatherInvalid = computed(() => isValidate.value && !allFactors['fatherFavorable'].length)
   const motherInvalid = computed(() => isValidate.value && !allFactors['motherFavorable'].length)
   const plot1Ref = ref<typeof VuePlotly>()
   const plot2Ref = ref<typeof VuePlotly>()
+  const toast = useToast()
 
   // define ref in store, and pass function to ViolinPlot to set it accordingly
   const setPlot1Ref = (ref: any) => {
@@ -65,6 +68,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     showPredict.value = false
     interpretedResults.value = ''
     isValidate.value = false
+    isPredictInterpretComplete.value = false
   }
 
   const getPrediction = async () => {
@@ -74,6 +78,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     showPredict.value = false
     interpretedResults.value = ''
     isInterpreting.value = true
+    isPredictInterpretComplete.value = false
     const readStream = async (reader: ReadableStreamDefaultReader<Uint8Array>, status: number) => {
       const partialLine = ''
       const decoder = new TextDecoder('utf-8')
@@ -94,6 +99,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
         interpretedResults.value += chunk
       }
     }
+
     const payload: PredictRequest = {
       model: 'mode1',
       data: {
@@ -133,6 +139,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     } finally {
       isLoading.value = false
       isInterpreting.value = false
+      isPredictInterpretComplete.value = true
     }
   }
 
@@ -158,6 +165,15 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
   }
 
   const exportResult = async () => {
+    if (!isPredictInterpretComplete.value) {
+      toast.add({
+        severity: 'error',
+        summary: '尚未完成預測',
+        detail: '須完成預測才能匯出結果！',
+        life: 5000
+      })
+      return
+    }
     const pdfTitle = '模式一：選項輸入'
     const inputFactors: InputFactors = {
       fatherFavorable: allFactors['fatherFavorable'].join('、'),
@@ -194,6 +210,7 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
     setPlot1Ref,
     setPlot2Ref,
     fatherInvalid,
-    motherInvalid
+    motherInvalid,
+    isPredictInterpretComplete
   }
 })
