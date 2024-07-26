@@ -17,7 +17,8 @@
         optionValue="value"
         placeholder="選擇因素"
         class="w-full text-sm md:w-[14rem] rounded-xl"
-        showClear
+        :class="invalidFactor ? 'border !border-red-500' : ''"
+        :invalid="invalidFactor"
       >
         <template #option="slotProps">
           <div>
@@ -46,13 +47,19 @@
       rows="4"
       class="resize-none w-full"
       placeholder="可直接輸入理由描述，或匯入範例文字開始編輯..."
+      :invalid="validate && factor['description'].trim() === ''"
     ></Textarea>
+    <InlineMessage severity="error" v-if="invalidFactor || invalidDescription" class="w-full">{{
+      invalidText
+    }}</InlineMessage>
   </div>
 </template>
 
 <script setup lang="ts">
 import Textarea from 'primevue/textarea'
 import Dropdown from 'primevue/dropdown'
+import InlineMessage from 'primevue/inlinemessage'
+import { computed } from 'vue'
 
 interface factorObj {
   factor: string | undefined
@@ -67,9 +74,26 @@ interface factorSourceObj {
 
 const factor = defineModel<factorObj>('factor', { required: true })
 const factorsList = defineModel<factorObj[]>('factorsList', { required: true })
-defineProps<{
+
+const props = defineProps<{
   index: number
   factorsSource: factorSourceObj[]
   setModal: Function
+  validate: boolean
 }>()
+
+const invalidFactor = computed(() => props.validate && factor.value.factor === undefined)
+const invalidDescription = computed(() => props.validate && factor.value.description.trim() === '')
+const invalidText = computed(() => {
+  let text = ''
+  if (invalidFactor.value) {
+    text += '因素'
+  }
+  if (invalidDescription.value) {
+    text += invalidFactor.value ? '與' : ''
+    text += '理由描述'
+  }
+  text += '不得為空！'
+  return text
+})
 </script>

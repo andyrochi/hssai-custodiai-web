@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { predictMode } from '@/api/modules/predictApi'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
@@ -7,17 +7,18 @@ import type { InputFactors, FiguresSrc } from '@/utils/pdfMake'
 import { createAndOpenPredictResultPdf } from '@/utils/pdfMake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
+import { useToast } from 'primevue/usetoast'
 
-export interface factorObj {
+export interface FactorObj {
   factor: string | undefined
   description: string
 }
 
 export interface Factors {
-  fatherFavorable: factorObj[]
-  fatherUnfavorable: factorObj[]
-  motherFavorable: factorObj[]
-  motherUnfavorable: factorObj[]
+  fatherFavorable: FactorObj[]
+  fatherUnfavorable: FactorObj[]
+  motherFavorable: FactorObj[]
+  motherUnfavorable: FactorObj[]
 }
 
 const defaultProbabilityStats = {
@@ -42,9 +43,22 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     motherFavorable: [],
     motherUnfavorable: []
   })
-
+  const isValidate = ref<boolean>(false)
+  const isPredictInterpretComplete = ref<boolean>(false)
+  const fatherInvalid = computed(() => isValidate.value && !allFactors['fatherFavorable'].length)
+  const motherInvalid = computed(() => isValidate.value && !allFactors['motherFavorable'].length)
+  const anyBlockInvalid = computed(() => {
+    const checkEmptyFactor = (factor: FactorObj) =>
+      factor.factor === undefined || factor.description.trim() === ''
+    const fatherFavInvalid = allFactors['fatherFavorable'].some(checkEmptyFactor)
+    const fatherUnfavInvalid = allFactors['fatherUnfavorable'].some(checkEmptyFactor)
+    const motherFavInvalid = allFactors['motherFavorable'].some(checkEmptyFactor)
+    const motherUnfavInvalid = allFactors['motherUnfavorable'].some(checkEmptyFactor)
+    return fatherFavInvalid || fatherUnfavInvalid || motherFavInvalid || motherUnfavInvalid
+  })
   const plot1Ref = ref<typeof VuePlotly>()
   const plot2Ref = ref<typeof VuePlotly>()
+  const toast = useToast()
 
   // define ref in store, and pass function to ViolinPlot to set it accordingly
   const setPlot1Ref = (ref: any) => {
@@ -81,17 +95,23 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     allFactors.motherUnfavorable = []
     showPredict.value = false
     interpretedResults.value = ''
+    isValidate.value = false
+    isPredictInterpretComplete.value = false
   }
 
   const getPrediction = async () => {
+    isValidate.value = true
+    if (fatherInvalid.value || motherInvalid.value) return
+    if (anyBlockInvalid.value) return
     isLoading.value = true
     showPredict.value = false
     interpretedResults.value = ''
     isInterpreting.value = true
+    isPredictInterpretComplete.value = false
 
-    const reduceFeatures = (acc: string[], factorObj: factorObj) => {
-      if (factorObj.factor !== undefined) {
-        acc.push(factorObj.factor)
+    const reduceFeatures = (acc: string[], FactorObj: FactorObj) => {
+      if (FactorObj.factor !== undefined) {
+        acc.push(FactorObj.factor)
       }
       return acc
     }
@@ -126,25 +146,25 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
         AA: {
           Feature: allFactors['fatherFavorable'].reduce<string[]>(reduceFeatures, []),
           Sentence: allFactors['fatherFavorable']
-            .map((factorObj) => factorObj.description)
+            .map((FactorObj) => FactorObj.description)
             .join(' ')
         },
         AD: {
           Feature: allFactors['fatherUnfavorable'].reduce<string[]>(reduceFeatures, []),
           Sentence: allFactors['fatherUnfavorable']
-            .map((factorObj) => factorObj.description)
+            .map((FactorObj) => FactorObj.description)
             .join(' ')
         },
         RA: {
           Feature: allFactors['motherFavorable'].reduce<string[]>(reduceFeatures, []),
           Sentence: allFactors['motherFavorable']
-            .map((factorObj) => factorObj.description)
+            .map((FactorObj) => FactorObj.description)
             .join(' ')
         },
         RD: {
           Feature: allFactors['motherUnfavorable'].reduce<string[]>(reduceFeatures, []),
           Sentence: allFactors['motherUnfavorable']
-            .map((factorObj) => factorObj.description)
+            .map((FactorObj) => FactorObj.description)
             .join(' ')
         }
       }
@@ -167,6 +187,7 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     } finally {
       isLoading.value = false
       isInterpreting.value = false
+      isPredictInterpretComplete.value = true
     }
   }
 
@@ -192,6 +213,16 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
   }
 
   const exportResult = async () => {
+    if (!isPredictInterpretComplete.value) {
+      toast.add({
+        severity: 'error',
+        summary: '尚未完成預測',
+        detail: '須完成預測才能匯出結果！',
+        life: 5000
+      })
+      return
+    }
+
     const reduceFactorDescription = (curStr: string, curFactor: any, curIndex: number) => {
       const i = curIndex + 1
       const factor = curFactor.factor ? `[${curFactor.factor}]` : '無'
@@ -235,6 +266,10 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
     isInterpreting,
     exportResult,
     setPlot1Ref,
-    setPlot2Ref
+    setPlot2Ref,
+    isValidate,
+    fatherInvalid,
+    motherInvalid,
+    isPredictInterpretComplete
   }
 })

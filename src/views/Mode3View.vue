@@ -10,6 +10,7 @@ import type { Factors } from '@/stores/mode3OptionsText'
 import { storeToRefs } from 'pinia'
 import ViolinPlot from '@/components/charts/ViolinPlot.vue'
 import MarkdownRenderer from '@/components/Chatbot/MarkdownRenderer.vue'
+import InlineMessage from 'primevue/inlinemessage'
 
 interface factorSourceObj {
   label: string
@@ -125,8 +126,17 @@ const factorTitleMapping = {
 }
 
 const store = useMode3OptionsTextStore()
-const { allFactors, predictResult, showPredict, isLoading, interpretedResults, isInterpreting } =
-  storeToRefs(store)
+const {
+  allFactors,
+  predictResult,
+  showPredict,
+  isLoading,
+  interpretedResults,
+  isInterpreting,
+  fatherInvalid,
+  motherInvalid,
+  isValidate
+} = storeToRefs(store)
 const { getPrediction, exportResult, setPlot1Ref, setPlot2Ref } = store
 
 const showModal = ref(false)
@@ -186,10 +196,14 @@ const send = () => {
           :setModal="
             setModalPropsWrapper('fatherFavorable', index, factorTitleMapping['fatherFavorable'])
           "
+          :validate="isValidate"
         >
         </FactorBlock>
       </div>
       <AddFactorButton @click="store.addNewFactor('fatherFavorable')"> </AddFactorButton>
+      <InlineMessage severity="error" v-if="fatherInvalid" class="mt-2 w-full"
+        >至少需要一項有利因素與理由!</InlineMessage
+      >
     </template>
     <template #fatherUnfavorable>
       <div class="mt-2">
@@ -207,6 +221,7 @@ const send = () => {
               factorTitleMapping['fatherUnfavorable']
             )
           "
+          :validate="isValidate"
         >
         </FactorBlock>
       </div>
@@ -225,10 +240,14 @@ const send = () => {
           :setModal="
             setModalPropsWrapper('motherFavorable', index, factorTitleMapping['motherFavorable'])
           "
+          :validate="isValidate"
         >
         </FactorBlock>
       </div>
       <AddFactorButton @click="store.addNewFactor('motherFavorable')"> </AddFactorButton>
+      <InlineMessage severity="error" v-if="motherInvalid" class="mt-2 w-full"
+        >至少需要一項有利因素與理由!</InlineMessage
+      >
     </template>
 
     <template #motherUnfavorable>
@@ -247,6 +266,7 @@ const send = () => {
               factorTitleMapping['motherUnfavorable']
             )
           "
+          :validate="isValidate"
         >
         </FactorBlock>
       </div>
