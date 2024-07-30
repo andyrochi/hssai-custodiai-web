@@ -61,7 +61,7 @@ const onSubmit = () => {
       </div>
     </div>
     <div class="flex flex-col w-full grow bg-orange-50 rounded-b-lg overflow-hidden">
-      <div class="grow overflow-auto">
+      <div class="grow overflow-auto scroll-smooth">
         <!-- content -->
         <ChatbotMessage
           v-for="(msgObj, index) in messageHistory?.filter((msgObj) => msgObj.role !== 'system')"

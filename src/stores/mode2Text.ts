@@ -8,6 +8,7 @@ import { createAndOpenPredictResultPdf } from '@/utils/pdfMake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
 import { useToast } from 'primevue/usetoast'
+import { convertToTraditional } from '@/utils'
 
 const defaultProbabilityStats = {
   all_probs: [],
@@ -92,8 +93,8 @@ export const useMode2TextStore = defineStore('mode2-text', () => {
           continue
         }
 
-        const decodedText = decoder.decode(value, { stream: true })
-        // const decodedText = this.convertToTraditional(decoder.decode(value, { stream: true }));
+        const text = decoder.decode(value, { stream: true })
+        const decodedText = convertToTraditional(text)
 
         if (status !== 200) {
           interpretedResults.value += decodedText

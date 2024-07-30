@@ -8,6 +8,7 @@ import { createAndOpenPredictResultPdf } from '@/utils/pdfMake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
 import { useToast } from 'primevue/usetoast'
+import { convertToTraditional } from '@/utils'
 
 export interface FactorObj {
   factor: string | undefined
@@ -127,8 +128,8 @@ export const useMode3OptionsTextStore = defineStore('mode3-options-text', () => 
           continue
         }
 
-        const decodedText = decoder.decode(value, { stream: true })
-        // const decodedText = this.convertToTraditional(decoder.decode(value, { stream: true }));
+        const text = decoder.decode(value, { stream: true })
+        const decodedText = convertToTraditional(text)
 
         if (status !== 200) {
           interpretedResults.value += decodedText

@@ -8,6 +8,7 @@ import pdfMake from 'pdfmake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
 import { createAndOpenChatHistoryPdf, type FiguresSrc } from '@/utils/pdfMake'
+import { convertToTraditional } from '@/utils'
 
 const defaultChatRequest: ChatRequest = {
   model: 'gpt-4o',
@@ -88,6 +89,7 @@ export const useChatStore = defineStore('home', () => {
     return messageHistory[messageHistory.length - 1].status
   })
   // summary watcher, contains side effects
+  // do the following when received a new message
   watch(isLoading, (newValue: boolean, oldValue: boolean) => {
     if (oldValue === true && newValue === false) {
       const histLength = messageHistory.length
@@ -172,9 +174,9 @@ export const useChatStore = defineStore('home', () => {
         continue
       }
 
-      const decodedText = decoder.decode(value, { stream: true })
+      const text = decoder.decode(value, { stream: true })
 
-      // const decodedText = this.convertToTraditional(decoder.decode(value, { stream: true }));
+      const decodedText = convertToTraditional(text)
 
       if (status !== 200) {
         appendLastMessageContent(decodedText)

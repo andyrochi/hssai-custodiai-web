@@ -24,8 +24,4 @@ declare module 'plotly.js-dist-min'
 
 declare module 'd3'
 
-// geojson
-declare module '*.geojson' {
-  const value: any
-  export default value
-}
+declare module 'opencc-js'
