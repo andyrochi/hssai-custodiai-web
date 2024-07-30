@@ -11,7 +11,7 @@ import Toast from 'primevue/toast'
   </header>
   <!-- The padding-top has been offsetted by 32px -->
   <main
-    class="pb-8 pt-[97px] md:pt-[93px] bg-orange-100"
+    class="pb-2 pt-[73px] md:pb-8 md:pt-[93px] bg-orange-100"
     :class="$route.name === 'home' ? 'h-dvh' : 'min-h-dvh'"
   >
     <RouterView />

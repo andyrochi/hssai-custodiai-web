@@ -25,7 +25,7 @@ watch(dontShowIntroCheckbox, (newVal) => {
 </script>
 
 <template>
-  <div class="w-[92vw] max-w-screen-2xl mx-auto flex h-full">
+  <div class="mx-2 md:w-[92vw] max-w-screen-2xl md:mx-auto flex h-full">
     <div
       :class="
         showIntro
