@@ -15,7 +15,7 @@ openai.api_key = os.getenv('OPENAI_KEY')
 # %%
 # For CORS Protocal
 app = Flask(__name__,
-            static_folder="../dist/static",
+            static_folder="../dist/assets",
             template_folder="../dist")
 CORS(app)
 count = 0
