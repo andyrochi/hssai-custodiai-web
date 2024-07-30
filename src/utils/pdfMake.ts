@@ -3,8 +3,8 @@ import type { Message } from '@/models/chatModels'
 
 const pdfFonts = {
   NotoSansTC: {
-    normal: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2',
-    bold: 'http://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2'
+    normal: 'https://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Regular.woff2',
+    bold: 'https://fonts.gstatic.com/ea/notosanstc/v1/NotoSansTC-Bold.woff2'
   }
 }
 
