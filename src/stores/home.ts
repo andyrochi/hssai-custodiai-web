@@ -1,10 +1,9 @@
-import { ref, reactive, computed, watch, pushScopeId } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { defineStore } from 'pinia'
 import { sendChat } from '@/api/modules/chatApi'
 import type { Message, Stage, ChatRequest } from '@/models/chatModels'
 import { predictMode } from '@/api/modules/predictApi'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
-import pdfMake from 'pdfmake'
 import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
 import { createAndOpenChatHistoryPdf, type FiguresSrc } from '@/utils/pdfMake'
@@ -70,6 +69,7 @@ export const useChatStore = defineStore('home', () => {
 
   const plot1Ref = ref<typeof VuePlotly>()
   const plot2Ref = ref<typeof VuePlotly>()
+  const chatContainerRef = ref<HTMLDivElement>()
 
   // define ref in store, and pass function to ViolinPlot to set it accordingly
   const setPlot1Ref = (ref: any) => {
@@ -77,6 +77,15 @@ export const useChatStore = defineStore('home', () => {
   }
   const setPlot2Ref = (ref: any) => {
     plot2Ref.value = ref
+  }
+  const setChatContainerRef = (ref: any) => {
+    chatContainerRef.value = ref.value
+  }
+
+  const scrollChatToBottom = () => {
+    if (chatContainerRef.value) {
+      chatContainerRef.value.scrollTop = chatContainerRef.value.scrollHeight
+    }
   }
 
   const predictResult = reactive<PredictResponse>({
@@ -142,7 +151,7 @@ export const useChatStore = defineStore('home', () => {
     try {
       messageHistory.push(newUserMessage)
       clearMessage()
-
+      nextTick(scrollChatToBottom)
       const chatRequest: ChatRequest = {
         ...defaultChatRequest,
         messages: messageHistory,
@@ -373,6 +382,7 @@ export const useChatStore = defineStore('home', () => {
   const appendLastMessageContent = (text: string) => {
     const lastIndex = messageHistory.length - 1
     messageHistory[lastIndex].content += text
+    nextTick(scrollChatToBottom)
   }
 
   const getPlot = async () => {
@@ -420,6 +430,7 @@ export const useChatStore = defineStore('home', () => {
     exportResult,
     setPlot1Ref,
     setPlot2Ref,
+    setChatContainerRef,
     isResultPredicted
   }
 })

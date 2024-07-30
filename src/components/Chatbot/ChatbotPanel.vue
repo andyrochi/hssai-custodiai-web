@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import ChatbotMessage from '@/components/Chatbot/ChatbotMessage.vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/home'
@@ -7,9 +7,10 @@ import { useChatStore } from '@/stores/home'
 const store = useChatStore()
 const { inputMessage, messageHistory, isLoading, currentStatus, predictResult, isResultPredicted } =
   storeToRefs(store)
-const { sendMessage, handleStartPredict, exportResult } = store
+const { sendMessage, handleStartPredict, exportResult, setChatContainerRef } = store
 
 const textarea = ref<HTMLTextAreaElement | null>(null)
+const chatContainer = ref<HTMLDivElement>()
 
 const adjustTextarea = () => {
   if (textarea.value) {
@@ -33,6 +34,11 @@ const onSubmit = () => {
   // handle resize event
   nextTick(adjustTextarea)
 }
+
+onMounted(() => {
+  // this is for setting a component reference for scrolling
+  setChatContainerRef(chatContainer)
+})
 </script>
 
 <template>
@@ -61,7 +67,7 @@ const onSubmit = () => {
       </div>
     </div>
     <div class="flex flex-col w-full grow bg-orange-50 rounded-b-lg overflow-hidden">
-      <div class="grow overflow-auto scroll-smooth">
+      <div class="grow overflow-auto scroll-smooth" ref="chatContainer">
         <!-- content -->
         <ChatbotMessage
           v-for="(msgObj, index) in messageHistory?.filter((msgObj) => msgObj.role !== 'system')"
