@@ -125,11 +125,11 @@ export const useMode1OptionsStore = defineStore('mode1-options', () => {
       }
     }
     try {
-      const response = await predictMode(payload)
+      const response = await predictMode(payload, toast)
       Object.assign(predictResult, response)
       isLoading.value = false
       showPredict.value = true
-      const interpretDataResponse = await interpretDataWithChat('mode1', payload, response)
+      const interpretDataResponse = await interpretDataWithChat('mode1', payload, response, toast)
       if (interpretDataResponse) {
         const reader = interpretDataResponse?.body?.getReader()
         const status = interpretDataResponse.status

@@ -8,6 +8,7 @@ import VuePlotly from 'vue3-plotly-ts'
 import Plotly from 'plotly.js-dist-min'
 import { createAndOpenChatHistoryPdf, type FiguresSrc } from '@/utils/pdfMake'
 import { convertToTraditional } from '@/utils'
+import { useToast } from 'primevue/usetoast'
 
 const defaultChatRequest: ChatRequest = {
   model: 'gpt-4o',
@@ -70,6 +71,7 @@ export const useChatStore = defineStore('home', () => {
   const plot1Ref = ref<typeof VuePlotly>()
   const plot2Ref = ref<typeof VuePlotly>()
   const chatContainerRef = ref<HTMLDivElement>()
+  const toast = useToast()
 
   // define ref in store, and pass function to ViolinPlot to set it accordingly
   const setPlot1Ref = (ref: any) => {
@@ -158,7 +160,7 @@ export const useChatStore = defineStore('home', () => {
         stage: currentStage.value
       }
 
-      const response = await sendChat(chatRequest)
+      const response = await sendChat(chatRequest, toast)
       if (response) {
         const reader = response?.body?.getReader()
         const status = response.status
@@ -265,7 +267,7 @@ export const useChatStore = defineStore('home', () => {
       }
 
       try {
-        const response = await predictMode(payload)
+        const response = await predictMode(payload, toast)
         Object.assign(predictResult, response)
         messageHistory.push({
           role: 'assistant',
@@ -359,7 +361,7 @@ export const useChatStore = defineStore('home', () => {
         stage: stage
       }
 
-      const response = await sendChat(chatRequest)
+      const response = await sendChat(chatRequest, toast)
       if (response) {
         const reader = response?.body?.getReader()
         const status = response.status

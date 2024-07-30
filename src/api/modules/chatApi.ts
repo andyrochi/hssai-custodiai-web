@@ -1,9 +1,8 @@
 import apiClient from '@/api/axiosClient'
-import axios from 'axios'
 import type { ChatRequest, ChatResponse, Message } from '@/models/chatModels'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
 
-export const sendChat = async (payload: ChatRequest): Promise<ChatResponse> => {
+export const sendChat = async (payload: ChatRequest, toast?: any): Promise<ChatResponse> => {
   try {
     // axios does not support streaming response on client side, use fetch instead.
     const response = await fetch(`${apiClient.defaults.baseURL}/send-messages`, {
@@ -13,22 +12,13 @@ export const sendChat = async (payload: ChatRequest): Promise<ChatResponse> => {
     })
     return response
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      // Axios-specific error
-      if (error.response) {
-        // Server responded with a status other than 200 range
-        console.error('Response error:', error.response.data)
-      } else if (error.request) {
-        // Request was made but no response received
-        console.error('No response received:', error.request)
-      } else {
-        // Something happened in setting up the request
-        console.error('Error', error.message)
-      }
-    } else {
-      // Handle other types of errors (non-Axios)
-      console.error('Unexpected error:', error)
-    }
+    toast.add({
+      severity: 'error',
+      summary: '出現問題',
+      detail: `發生問題，請稍後再嘗試或是聯絡管理員。錯誤如下:${error}`,
+      life: 5000
+    })
+    console.error('Error:', error)
     throw error // Rethrow error for further handling if needed
   }
 }
@@ -36,7 +26,8 @@ export const sendChat = async (payload: ChatRequest): Promise<ChatResponse> => {
 export const interpretDataWithChat = async (
   mode: 'mode1' | 'mode2' | 'mode3',
   predictRequest: PredictRequest,
-  predictResult: PredictResponse
+  predictResult: PredictResponse,
+  toast?: any
 ) => {
   // Prepare prompt
   const defaultChatRequest: ChatRequest = {
@@ -291,7 +282,7 @@ export const interpretDataWithChat = async (
       messages: interpretDataMessageHistory,
       stage: 'do-predict'
     }
-    const response = await sendChat(chatRequest)
+    const response = await sendChat(chatRequest, toast)
     return response
   } catch (error) {
     console.error(error)
