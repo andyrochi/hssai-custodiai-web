@@ -2,6 +2,31 @@ import apiClient from '@/api/axiosClient'
 import type { ChatRequest, ChatResponse, Message } from '@/models/chatModels'
 import type { PredictRequest, PredictResponse } from '@/models/predictModels'
 
+interface PredictInput {
+  AA: {
+    Feature: string[]
+    Sentence: string
+  }
+  AD: {
+    Feature: string[]
+    Sentence: string
+  }
+  RA: {
+    Feature: string[]
+    Sentence: string
+  }
+  RD: {
+    Feature: string[]
+    Sentence: string
+  }
+}
+
+type InterpretDataDescriptionType = {
+  [key: string]: {
+    [key: string]: string
+  }
+}
+
 export const sendChat = async (payload: ChatRequest, toast?: any): Promise<ChatResponse> => {
   try {
     // axios does not support streaming response on client side, use fetch instead.
@@ -40,7 +65,7 @@ export const interpretDataWithChat = async (
     mode2: ['S1', 'S2'],
     mode3: ['C1', 'C2']
   }
-  const interpretDataDescription = {
+  const interpretDataDescription: InterpretDataDescriptionType = {
     有利: {
       親子感情: '親子彼此互動的模式親密，子女對當事人有信賴/依附關係。',
       意願能力: '當事人有積極撫養的意願，並且有相關撫養規劃與適合的親職能力。',
@@ -149,25 +174,26 @@ export const interpretDataWithChat = async (
     }
   ]
 
-  const prepareMode1InterpreterInput = (predictInput) => {
+  const prepareMode1InterpreterInput = (predictInput: PredictInput) => {
     const returnResult = { AA: '', AD: '', RA: '', RD: '' }
 
     // Assuming 'result' is a previously defined object
     Object.keys(predictInput).forEach((key) => {
-      predictInput[key].Feature.forEach((item) => {
-        if (!key.includes('D')) {
+      const typedKey = key as keyof PredictInput
+      predictInput[typedKey].Feature.forEach((item) => {
+        if (!typedKey.includes('D')) {
           // Favorable case
-          returnResult[key] += interpretDataDescription['有利'][item]
+          returnResult[typedKey] += interpretDataDescription['有利'][item]
         } else {
           // Unfavorable case
-          returnResult[key] += interpretDataDescription['不利'][item]
+          returnResult[typedKey] += interpretDataDescription['不利'][item]
         }
       })
     })
 
     return returnResult
   }
-  const prepareMode2InterpreterInput = (predictInput) => {
+  const prepareMode2InterpreterInput = (predictInput: PredictInput) => {
     const returnResult = {
       AA: predictInput.AA.Sentence,
       AD: predictInput.AD.Sentence,
@@ -176,7 +202,7 @@ export const interpretDataWithChat = async (
     }
     return returnResult
   }
-  const prepareMode3InterpreterInput = (predictInput) => {
+  const prepareMode3InterpreterInput = (predictInput: PredictInput) => {
     const returnResult = {
       AA: predictInput.AA.Sentence,
       AD: predictInput.AD.Sentence,
@@ -186,13 +212,14 @@ export const interpretDataWithChat = async (
 
     // Assuming 'result' is a previously defined object
     Object.keys(predictInput).forEach((key) => {
-      predictInput[key].Feature.forEach((item) => {
-        if (!key.includes('D')) {
+      const typedKey = key as keyof PredictInput
+      predictInput[typedKey].Feature.forEach((item) => {
+        if (!typedKey.includes('D')) {
           // Favorable case
-          returnResult[key] += interpretDataDescription['有利'][item]
+          returnResult[typedKey] += interpretDataDescription['有利'][item]
         } else {
           // Unfavorable case
-          returnResult[key] += interpretDataDescription['不利'][item]
+          returnResult[typedKey] += interpretDataDescription['不利'][item]
         }
       })
     })

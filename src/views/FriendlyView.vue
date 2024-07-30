@@ -16,8 +16,18 @@ interface ResourceItem {
 
 type ResourceCategory = ResourceItem[]
 
+type ResourceCategoryKey =
+  | '政府部門'
+  | '法律議題'
+  | '家庭諮商'
+  | '家庭扶助'
+  | '親職教育'
+  | '兒少照顧'
+  | '心理健康'
+  | '多元族群'
+
 interface CityResources {
-  [resourceCategory: string]: ResourceCategory
+  [key: string]: ResourceCategory | undefined // Allow for undefined categories
 }
 
 interface CitySource {
@@ -32,7 +42,7 @@ const cities = reactive<City[]>(
 
 const isUnion = ref<boolean>(false)
 const isIntersection = ref<boolean>(false)
-const selectedResources = reactive({
+const selectedResources = reactive<Record<ResourceCategoryKey, ResourceCategory>>({
   政府部門: [],
   法律議題: [],
   家庭諮商: [],
@@ -53,12 +63,9 @@ const toggleCity = (cityName: string) => {
 
   // TODO: fix typescript issue later
   const cityResources: CityResources = resources[cityName] || {}
-  Object.keys(selectedResources).forEach((category) => {
-    selectedResources[category] = []
-    if (cityResources[category]) {
-      selectedResources[category] = cityResources[category]
-    }
-  })
+  for (const category of Object.keys(selectedResources) as ResourceCategoryKey[]) {
+    selectedResources[category] = cityResources[category] || []
+  }
 }
 
 watch(isUnion, (newValue, oldValue) => {
@@ -68,18 +75,17 @@ watch(isUnion, (newValue, oldValue) => {
     cities.forEach((city, index, cities) => {
       cities[index].status = false
     })
-    Object.keys(selectedResources).forEach((category) => {
-      const map = new Map()
+    for (const category of Object.keys(selectedResources) as ResourceCategoryKey[]) {
+      const map = new Map<string, ResourceItem>()
 
-      Object.keys(resources).forEach((city) => {
-        if (resources[city][category]) {
-          resources[city][category].forEach((resource) => {
-            map.set(resource.name, resource)
-          })
+      for (const cityName of Object.keys(resources)) {
+        const cityResources = resources[cityName][category] || []
+        for (const resource of cityResources) {
+          map.set(resource.name, resource)
         }
-      })
+      }
       selectedResources[category] = Array.from(map.values())
-    })
+    }
   }
 })
 
@@ -91,24 +97,21 @@ watch(isIntersection, (newValue, oldValue) => {
       cities[index].status = false
     })
 
-    // Iterate over each category
-    Object.keys(selectedResources).forEach((category) => {
-      const cityKeys = Object.keys(resources)
-      if (cityKeys.length === 0) return
+    for (const category of Object.keys(selectedResources) as ResourceCategoryKey[]) {
+      const cityNames = Object.keys(resources)
+      if (cityNames.length === 0) continue
 
-      // Start with the resources from the first city
-      let intersection = resources[cityKeys[0]][category] || []
+      let intersection = resources[cityNames[0]][category] || []
 
-      // Intersect with resources from each subsequent city
-      for (let i = 1; i < cityKeys.length; i++) {
-        const cityResources = resources[cityKeys[i]][category] || []
+      for (let i = 1; i < cityNames.length; i++) {
+        const cityResources = resources[cityNames[i]][category] || []
         intersection = intersection.filter((resource) =>
           cityResources.some((otherResource) => otherResource.name === resource.name)
         )
       }
 
       selectedResources[category] = intersection
-    })
+    }
   }
 })
 </script>
@@ -161,7 +164,7 @@ watch(isIntersection, (newValue, oldValue) => {
         </div>
         <div class="bg-slate-50 px-4 py-4 rounded-xl my-4">
           <div
-            v-for="(category, i) in Object.keys(selectedResources)"
+            v-for="(category, i) in Object.keys(selectedResources) as ResourceCategoryKey[]"
             :key="category"
             :class="i !== Object.keys(selectedResources).length - 1 ? 'mb-2' : ''"
           >
