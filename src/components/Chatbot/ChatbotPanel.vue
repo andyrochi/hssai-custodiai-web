@@ -44,7 +44,7 @@ const onSubmit = () => {
         <!-- text content -->
         <span class="font-bold">Le 姐家事協商好夥伴</span>
         <div class="text-gray-400 text-xs">
-          請使用者以家事調解員的身分來使用，儘量公允地提供父母雙方相關資訊
+          請使用者從家事調解員或第三方的角度來公允地提供相關資訊
         </div>
       </div>
       <div class="flex align-center no-wrap">
