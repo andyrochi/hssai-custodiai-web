@@ -1,18 +1,18 @@
-# hssai-custodiai-web
+# CustodiAI: A System to Predict the Outcome of Child Custody Cases | WebUI
 
-This template should help get you started developing with Vue 3 in Vite.
+## Introduction to CustodiAI
 
-## Recommended IDE Setup
+CustodiAI uses artificial intelligence to predict child custody outcomes in family law cases, providing data-driven insights for legal professionals and individuals involved in custody disputes. Endorsed by the Taiwan Shilin District Court and the Taiwan Judicial Yuan, CustodiAI is actively used by social workers to assist parents in understanding their strengths and weaknesses in custody disputes, thereby increasing opportunities for settlement. The platform was designed and developed by the [Artificial Intelligence for Fundamental Research (AIFR) Group](http://www.phys.nthu.edu.tw/~aicmt/AIFR.html), led by [Prof. Daw-Wei Wang](https://phys.site.nthu.edu.tw/p/406-1335-58679,r3581.php?Lang=en) at National Tsing-Hua University (NTHU).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Type Support for `.vue` Imports in TS
+Project Link: https://hssai-custodiai.phys.nthu.edu.tw/
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Project Description
 
-## Customize configuration
+This codebase contains the frontend of CustodiAI, mainly implemented using Vue.js, TypeScript, TailwindCSS, and Vite as the bundler.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+# Setup Details
 
 ## Node Environment
 
